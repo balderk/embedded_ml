@@ -1,0 +1,4 @@
+*.so
+.cproject
+.project
+.mxproject
