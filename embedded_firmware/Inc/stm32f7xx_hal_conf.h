@@ -40,7 +40,7 @@ extern "C" {
 /* #define HAL_CRYP_MODULE_ENABLED   */
 /* #define HAL_CAN_MODULE_ENABLED   */
 /* #define HAL_CEC_MODULE_ENABLED   */
-/* #define HAL_CRC_MODULE_ENABLED   */
+#define HAL_CRC_MODULE_ENABLED
 /* #define HAL_CRYP_MODULE_ENABLED   */
 /* #define HAL_DAC_MODULE_ENABLED   */
 /* #define HAL_DCMI_MODULE_ENABLED   */
@@ -273,7 +273,9 @@ extern "C" {
 #endif /* HAL_CEC_MODULE_ENABLED */
 
 #ifdef HAL_CRC_MODULE_ENABLED
+
 #include "stm32f7xx_hal_crc.h"
+
 #endif /* HAL_CRC_MODULE_ENABLED */
 
 #ifdef HAL_CRYP_MODULE_ENABLED

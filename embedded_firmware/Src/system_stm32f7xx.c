@@ -155,21 +155,21 @@ void SystemInit(void) {
     /* Reset the RCC clock configuration to the default reset state ------------*/
     /* Set HSION bit */
     RCC->CR |= (uint32_t)
-    0x00000001;
+            0x00000001;
 
     /* Reset CFGR register */
     RCC->CFGR = 0x00000000;
 
     /* Reset HSEON, CSSON and PLLON bits */
     RCC->CR &= (uint32_t)
-    0xFEF6FFFF;
+            0xFEF6FFFF;
 
     /* Reset PLLCFGR register */
     RCC->PLLCFGR = 0x24003010;
 
     /* Reset HSEBYP bit */
     RCC->CR &= (uint32_t)
-    0xFFFBFFFF;
+            0xFFFBFFFF;
 
     /* Disable all interrupts */
     RCC->CIR = 0x00000000;
@@ -241,10 +241,10 @@ void SystemCoreClockUpdate(void) {
 
             if (pllsource != 0) {
                 /* HSE used as PLL clock source */
-                pllvco = (HSE_VALUE / pllm) *((RCC->PLLCFGR & RCC_PLLCFGR_PLLN) >> 6);
+                pllvco = (HSE_VALUE / pllm) * ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN) >> 6);
             } else {
                 /* HSI used as PLL clock source */
-                pllvco = (HSI_VALUE / pllm) *((RCC->PLLCFGR & RCC_PLLCFGR_PLLN) >> 6);
+                pllvco = (HSI_VALUE / pllm) * ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN) >> 6);
             }
 
             pllp = (((RCC->PLLCFGR & RCC_PLLCFGR_PLLP) >> 16) + 1) * 2;
