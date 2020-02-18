@@ -76,6 +76,16 @@ void Error_Handler(void);
 #define RMII_RXD1_GPIO_Port GPIOC
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
+#define DEBUG_4_Pin GPIO_PIN_12
+#define DEBUG_4_GPIO_Port GPIOE
+#define DEBUG_3_Pin GPIO_PIN_14
+#define DEBUG_3_GPIO_Port GPIOE
+#define DEBUG_2_Pin GPIO_PIN_15
+#define DEBUG_2_GPIO_Port GPIOE
+#define DEBUG_1_Pin GPIO_PIN_10
+#define DEBUG_1_GPIO_Port GPIOB
+#define DEBUG_0_Pin GPIO_PIN_11
+#define DEBUG_0_GPIO_Port GPIOB
 #define RMII_TXD1_Pin GPIO_PIN_13
 #define RMII_TXD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
