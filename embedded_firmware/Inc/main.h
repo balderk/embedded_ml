@@ -111,7 +111,15 @@ void Error_Handler(void);
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+#define SET_USER_LED(x) \
+({\
+    HAL_GPIO_WritePin(LD ## x ## _GPIO_Port, LD ## x ## _Pin, GPIO_PIN_SET);\
+})
 
+#define RESET_USER_LED(x) \
+({\
+    HAL_GPIO_WritePin(LD ## x ## _GPIO_Port, LD ## x ## _Pin, GPIO_PIN_RESET);\
+})
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
