@@ -8,7 +8,7 @@ SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_C_COMPILER arm-none-eabi-gcc)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
 set(CMAKE_AR arm-none-eabi-ar)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
@@ -24,53 +24,35 @@ SET(FPU_FLAGS "-mfloat-abi=hard  -mfpu=fpv5-d16")
 #SET(FPU_FLAGS "-mfloat-abi=soft")
 
 SET(COMMON_FLAGS
-        "-mcpu=cortex-m7 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
-    -g3 -fno-common -fmessage-length=0 -specs=nano.specs")
+    "-mcpu=cortex-m7 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
+    -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs")
 
 SET(OPT_LEVEL "-O3")
 
 SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++11 ${OPT_LEVEL}")
-SET(CMAKE_C_FLAGS_INIT "${COMMON_FLAGS} -std=gnu11 ${OPT_LEVEL}")
+SET(CMAKE_C_FLAGS_INIT "${COMMON_FLAGS} -std=gnu18 ${OPT_LEVEL}")
 SET(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,-gc-sections,--print-memory-usage -T ${LINKER_SCRIPT}")
 
-PROJECT(embedded_ml C CXX ASM)
+PROJECT(embedded_firmware C CXX ASM)
 set(CMAKE_CXX_STANDARD 11)
 
 #add_definitions(-DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__FPU_PRESENT=1)
 add_definitions(-DUSE_HAL_DRIVER -DSTM32F767xx -DDEBUG)
 
-file(GLOB_RECURSE SOURCES "Startup/*.*" "Middlewares/*.*" "Drivers/*.*" "Src/*.*")
+file(GLOB_RECURSE SOURCES "startup/*.*" "Drivers/*.*" "Src/*.*")
 
 include_directories(
-        Inc
-        Middlewares/Third_Party/LwIP/src/include
-        Middlewares/Third_Party/LwIP/system
-        Drivers/STM32F7xx_HAL_Driver/Inc
-        Drivers/STM32F7xx_HAL_Driver/Inc/Legacy
-        Middlewares/Third_Party/FreeRTOS/Source/include
-        Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
-        Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
-        Middlewares/Third_Party/LwIP/src/include/netif/ppp
-        Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-        Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-        Drivers/CMSIS/Device/ST/STM32F7xx/Include
-        Middlewares/Third_Party/LwIP/src/include/lwip
-        Middlewares/Third_Party/LwIP/src/include/lwip/apps
-        Middlewares/Third_Party/LwIP/src/include/lwip/priv
-        Middlewares/Third_Party/LwIP/src/include/lwip/prot
-        Middlewares/Third_Party/LwIP/src/include/netif
-        Middlewares/Third_Party/LwIP/src/include/posix
-        Middlewares/Third_Party/LwIP/src/include/posix/sys
-        Middlewares/Third_Party/LwIP/system/arch
-        Drivers/CMSIS/Include
+       Inc
+       Drivers/STM32F7xx_HAL_Driver/Inc
+       Drivers/STM32F7xx_HAL_Driver/Inc/Legacy
+       Drivers/CMSIS/Device/ST/STM32F7xx/Include
+       Drivers/CMSIS/Include
 )
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
-#add_executable(${PROJECT_NAME}.hex ${SOURCES} ${LINKER_SCRIPT})
 
 set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
-
+    "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
