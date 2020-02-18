@@ -15,14 +15,14 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F7xx_HAL_ETH_H
 #define __STM32F7xx_HAL_ETH_H
 
 #ifdef __cplusplus
-extern "C" {
+ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -634,7 +634,7 @@ typedef struct
   
   HAL_LockTypeDef            Lock;          /*!< ETH Lock                    */
 
-#if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
+  #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
 
   void    (* TxCpltCallback)     ( struct __ETH_HandleTypeDef * heth);  /*!< ETH Tx Complete Callback   */
   void    (* RxCpltCallback)     ( struct __ETH_HandleTypeDef * heth);  /*!< ETH Rx  Complete Callback   */
@@ -679,67 +679,67 @@ typedef  void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef * heth); /*!< pointer to
 
 /** @defgroup ETH_Buffers_setting ETH Buffers setting
   * @{
-  */
+  */ 
 #define ETH_MAX_PACKET_SIZE    ((uint32_t)1524U)    /*!< ETH_HEADER + ETH_EXTRA + ETH_VLAN_TAG + ETH_MAX_ETH_PAYLOAD + ETH_CRC */
 #define ETH_HEADER               ((uint32_t)14U)    /*!< 6 byte Dest addr, 6 byte Src addr, 2 byte length/type */
 #define ETH_CRC                   ((uint32_t)4U)    /*!< Ethernet CRC */
-#define ETH_EXTRA                 ((uint32_t)2U)    /*!< Extra bytes in some cases */
+#define ETH_EXTRA                 ((uint32_t)2U)    /*!< Extra bytes in some cases */   
 #define ETH_VLAN_TAG              ((uint32_t)4U)    /*!< optional 802.1q VLAN Tag */
 #define ETH_MIN_ETH_PAYLOAD       ((uint32_t)46U)    /*!< Minimum Ethernet payload size */
 #define ETH_MAX_ETH_PAYLOAD       ((uint32_t)1500U)    /*!< Maximum Ethernet payload size */
-#define ETH_JUMBO_FRAME_PAYLOAD   ((uint32_t)9000U)    /*!< Jumbo frame payload size */
+#define ETH_JUMBO_FRAME_PAYLOAD   ((uint32_t)9000U)    /*!< Jumbo frame payload size */      
 
  /* Ethernet driver receive buffers are organized in a chained linked-list, when
     an Ethernet packet is received, the Rx-DMA will transfer the packet from RxFIFO
     to the driver receive buffers memory.
 
-    Depending on the size of the received Ethernet packet and the size of
+    Depending on the size of the received Ethernet packet and the size of 
     each Ethernet driver receive buffer, the received packet can take one or more
-    Ethernet driver receive buffer.
+    Ethernet driver receive buffer. 
 
-    In below are defined the size of one Ethernet driver receive buffer ETH_RX_BUF_SIZE
+    In below are defined the size of one Ethernet driver receive buffer ETH_RX_BUF_SIZE 
     and the total count of the driver receive buffers ETH_RXBUFNB.
 
-    The configured value for ETH_RX_BUF_SIZE and ETH_RXBUFNB are only provided as
-    example, they can be reconfigured in the application layer to fit the application
-    needs */
+    The configured value for ETH_RX_BUF_SIZE and ETH_RXBUFNB are only provided as 
+    example, they can be reconfigured in the application layer to fit the application 
+    needs */ 
 
 /* Here we configure each Ethernet driver receive buffer to fit the Max size Ethernet
    packet */
 #ifndef ETH_RX_BUF_SIZE
-#define ETH_RX_BUF_SIZE         ETH_MAX_PACKET_SIZE
+ #define ETH_RX_BUF_SIZE         ETH_MAX_PACKET_SIZE 
 #endif
 
-/* 5 Ethernet driver receive buffers are used (in a chained linked list)*/
+/* 5 Ethernet driver receive buffers are used (in a chained linked list)*/ 
 #ifndef ETH_RXBUFNB
-#define ETH_RXBUFNB             ((uint32_t)5U)     /*  5 Rx buffers of size ETH_RX_BUF_SIZE */
+ #define ETH_RXBUFNB             ((uint32_t)5U)     /*  5 Rx buffers of size ETH_RX_BUF_SIZE */
 #endif
 
 
  /* Ethernet driver transmit buffers are organized in a chained linked-list, when
-    an Ethernet packet is transmitted, Tx-DMA will transfer the packet from the
+    an Ethernet packet is transmitted, Tx-DMA will transfer the packet from the 
     driver transmit buffers memory to the TxFIFO.
 
-    Depending on the size of the Ethernet packet to be transmitted and the size of
-    each Ethernet driver transmit buffer, the packet to be transmitted can take
-    one or more Ethernet driver transmit buffer.
+    Depending on the size of the Ethernet packet to be transmitted and the size of 
+    each Ethernet driver transmit buffer, the packet to be transmitted can take 
+    one or more Ethernet driver transmit buffer. 
 
-    In below are defined the size of one Ethernet driver transmit buffer ETH_TX_BUF_SIZE
+    In below are defined the size of one Ethernet driver transmit buffer ETH_TX_BUF_SIZE 
     and the total count of the driver transmit buffers ETH_TXBUFNB.
 
-    The configured value for ETH_TX_BUF_SIZE and ETH_TXBUFNB are only provided as
-    example, they can be reconfigured in the application layer to fit the application
-    needs */
+    The configured value for ETH_TX_BUF_SIZE and ETH_TXBUFNB are only provided as 
+    example, they can be reconfigured in the application layer to fit the application 
+    needs */ 
 
 /* Here we configure each Ethernet driver transmit buffer to fit the Max size Ethernet
    packet */
-#ifndef ETH_TX_BUF_SIZE
-#define ETH_TX_BUF_SIZE         ETH_MAX_PACKET_SIZE
+#ifndef ETH_TX_BUF_SIZE 
+ #define ETH_TX_BUF_SIZE         ETH_MAX_PACKET_SIZE
 #endif
 
-/* 5 Ethernet driver transmit buffers are used (in a chained linked list)*/
+/* 5 Ethernet driver transmit buffers are used (in a chained linked list)*/ 
 #ifndef ETH_TXBUFNB
-#define ETH_TXBUFNB             ((uint32_t)5U)      /* 5  Tx buffers of size ETH_TX_BUF_SIZE */
+ #define ETH_TXBUFNB             ((uint32_t)5U)      /* 5  Tx buffers of size ETH_TX_BUF_SIZE */
 #endif
 
  /**
@@ -763,9 +763,9 @@ typedef  void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef * heth); /*!< pointer to
   -----------------------------------------------------------------------------------------------
 */
 
-/**
+/** 
   * @brief  Bit definition of TDES0 register: DMA Tx descriptor status register
-  */
+  */ 
 #define ETH_DMATXDESC_OWN                     ((uint32_t)0x80000000U)  /*!< OWN bit: descriptor is owned by DMA engine */
 #define ETH_DMATXDESC_IC                      ((uint32_t)0x40000000U)  /*!< Interrupt on Completion */
 #define ETH_DMATXDESC_LS                      ((uint32_t)0x20000000U)  /*!< Last Segment */
@@ -774,10 +774,10 @@ typedef  void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef * heth); /*!< pointer to
 #define ETH_DMATXDESC_DP                      ((uint32_t)0x04000000U)  /*!< Disable Padding */
 #define ETH_DMATXDESC_TTSE                    ((uint32_t)0x02000000U)  /*!< Transmit Time Stamp Enable */
 #define ETH_DMATXDESC_CIC                     ((uint32_t)0x00C00000U)  /*!< Checksum Insertion Control: 4 cases */
-#define ETH_DMATXDESC_CIC_BYPASS              ((uint32_t)0x00000000U)  /*!< Do Nothing: Checksum Engine is bypassed */
-#define ETH_DMATXDESC_CIC_IPV4HEADER          ((uint32_t)0x00400000U)  /*!< IPV4 header Checksum Insertion */
-#define ETH_DMATXDESC_CIC_TCPUDPICMP_SEGMENT  ((uint32_t)0x00800000U)  /*!< TCP/UDP/ICMP Checksum Insertion calculated over segment only */
-#define ETH_DMATXDESC_CIC_TCPUDPICMP_FULL     ((uint32_t)0x00C00000U)  /*!< TCP/UDP/ICMP Checksum Insertion fully calculated */
+#define ETH_DMATXDESC_CIC_BYPASS              ((uint32_t)0x00000000U)  /*!< Do Nothing: Checksum Engine is bypassed */ 
+#define ETH_DMATXDESC_CIC_IPV4HEADER          ((uint32_t)0x00400000U)  /*!< IPV4 header Checksum Insertion */ 
+#define ETH_DMATXDESC_CIC_TCPUDPICMP_SEGMENT  ((uint32_t)0x00800000U)  /*!< TCP/UDP/ICMP Checksum Insertion calculated over segment only */ 
+#define ETH_DMATXDESC_CIC_TCPUDPICMP_FULL     ((uint32_t)0x00C00000U)  /*!< TCP/UDP/ICMP Checksum Insertion fully calculated */ 
 #define ETH_DMATXDESC_TER                     ((uint32_t)0x00200000U)  /*!< Transmit End of Ring */
 #define ETH_DMATXDESC_TCH                     ((uint32_t)0x00100000U)  /*!< Second Address Chained */
 #define ETH_DMATXDESC_TTSS                    ((uint32_t)0x00020000U)  /*!< Tx Time Stamp Status */
@@ -796,20 +796,20 @@ typedef  void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef * heth); /*!< pointer to
 #define ETH_DMATXDESC_UF                      ((uint32_t)0x00000002U)  /*!< Underflow Error: late data arrival from the memory */
 #define ETH_DMATXDESC_DB                      ((uint32_t)0x00000001U)  /*!< Deferred Bit */
 
-/**
+/** 
   * @brief  Bit definition of TDES1 register
-  */
+  */ 
 #define ETH_DMATXDESC_TBS2  ((uint32_t)0x1FFF0000U)  /*!< Transmit Buffer2 Size */
 #define ETH_DMATXDESC_TBS1  ((uint32_t)0x00001FFFU)  /*!< Transmit Buffer1 Size */
 
-/**
+/** 
   * @brief  Bit definition of TDES2 register
-  */
+  */ 
 #define ETH_DMATXDESC_B1AP  ((uint32_t)0xFFFFFFFFU)  /*!< Buffer1 Address Pointer */
 
-/**
+/** 
   * @brief  Bit definition of TDES3 register
-  */
+  */ 
 #define ETH_DMATXDESC_B2AP  ((uint32_t)0xFFFFFFFFU)  /*!< Buffer2 Address Pointer */
 
   /*---------------------------------------------------------------------------------------------
@@ -819,10 +819,10 @@ typedef  void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef * heth); /*!< pointer to
   ----------------------------------------------------------------------------------------------*/
 
 /* Bit definition of TDES6 register */
-#define ETH_DMAPTPTXDESC_TTSL  ((uint32_t)0xFFFFFFFFU)  /* Transmit Time Stamp Low */
+ #define ETH_DMAPTPTXDESC_TTSL  ((uint32_t)0xFFFFFFFFU)  /* Transmit Time Stamp Low */
 
 /* Bit definition of TDES7 register */
-#define ETH_DMAPTPTXDESC_TTSH  ((uint32_t)0xFFFFFFFFU)  /* Transmit Time Stamp High */
+ #define ETH_DMAPTPTXDESC_TTSH  ((uint32_t)0xFFFFFFFFU)  /* Transmit Time Stamp High */
 
 /**
   * @}
