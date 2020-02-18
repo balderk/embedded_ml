@@ -23,9 +23,14 @@ SET(FPU_FLAGS "-mfloat-abi=hard  -mfpu=fpv5-d16")
 #Uncomment for software floating point
 #SET(FPU_FLAGS "-mfloat-abi=soft")
 
+SET(EXTRA_OPTS "-falign-functions=32 -falign-labels=32 -falign-loops=32 \
+        ")
+
+
 SET(COMMON_FLAGS
     "-mcpu=cortex-m7 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
-    -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs")
+    -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs\
+     ${EXTRA_OPTS}")
 
 SET(OPT_LEVEL "-O3")
 

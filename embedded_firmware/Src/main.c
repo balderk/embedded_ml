@@ -42,6 +42,8 @@
 
 /* USER CODE END PM */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /* Private variables ---------------------------------------------------------*/
 
 CRC_HandleTypeDef hcrc;
@@ -121,6 +123,20 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
+        HAL_Delay(100);
+        SET_USER_LED(1);
+        HAL_Delay(100);
+        SET_USER_LED(2);
+        HAL_Delay(100);
+        SET_USER_LED(3);
+        HAL_Delay(100);
+        RESET_USER_LED(3);
+        HAL_Delay(100);
+        RESET_USER_LED(2);
+        HAL_Delay(100);
+        RESET_USER_LED(1);
+        HAL_Delay(100);
+
         /* USER CODE END WHILE */
 
         MX_X_CUBE_AI_Process();
@@ -382,3 +398,5 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+#pragma clang diagnostic pop
