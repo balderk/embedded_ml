@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "test.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,8 +42,6 @@
 
 /* USER CODE END PM */
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /* Private variables ---------------------------------------------------------*/
 
 CRC_HandleTypeDef hcrc;
@@ -72,7 +70,18 @@ static void MX_CRC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint16_t i = 0;
+uint16_t j = 0;
+uint32_t delay = 0;
 
+static inline void incremet_stuff() {
+    HAL_Delay(delay);
+    delay = ((uint32_t) test[i][j]) % 50;
+    if (++j == TEST_NUM_COLS) {
+        j = 0;
+        i = i + 1 % TEST_NUM_ROWS;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -123,19 +132,21 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
-        HAL_Delay(100);
+        incremet_stuff();
         SET_USER_LED(1);
-        HAL_Delay(100);
+        incremet_stuff();
         SET_USER_LED(2);
-        HAL_Delay(100);
+        incremet_stuff();
         SET_USER_LED(3);
-        HAL_Delay(100);
+        incremet_stuff();
         RESET_USER_LED(3);
-        HAL_Delay(100);
+        incremet_stuff();
         RESET_USER_LED(2);
-        HAL_Delay(100);
+        incremet_stuff();
         RESET_USER_LED(1);
-        HAL_Delay(100);
+        incremet_stuff();
+
+
 
         /* USER CODE END WHILE */
 
@@ -398,5 +409,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-#pragma clang diagnostic pop

@@ -69,18 +69,18 @@ Mcu.UserConstants=
 Mcu.UserName=STM32F767ZITx
 MxCube.Version=5.5.0
 MxDb.Version=DB.5.0.50
-NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:true\:false
-NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:true\:false
+NVIC.BusFault_IRQn=true\:3\:0\:true\:false\:true\:true\:false
+NVIC.DebugMonitor_IRQn=true\:3\:0\:true\:false\:true\:true\:false
 NVIC.ForceEnableDMAVector=true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:true\:false
-NVIC.MemoryManagement_IRQn=true\:0\:0\:false\:false\:true\:true\:false
+NVIC.MemoryManagement_IRQn=true\:3\:0\:true\:false\:true\:true\:false
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:true\:false
 NVIC.OTG_FS_IRQn=true\:0\:0\:false\:false\:true\:false\:true
-NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:true\:false
+NVIC.PendSV_IRQn=true\:3\:0\:true\:false\:true\:true\:false
 NVIC.PriorityGroup=NVIC_PRIORITYGROUP_4
-NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:true\:false
+NVIC.SVCall_IRQn=true\:3\:0\:true\:false\:true\:true\:false
 NVIC.SysTick_IRQn=true\:0\:0\:false\:false\:true\:true\:true
-NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:true\:false
+NVIC.UsageFault_IRQn=true\:3\:0\:true\:false\:true\:true\:false
 PA1.GPIOParameters=GPIO_Label
 PA1.GPIO_Label=RMII_REF_CLK [LAN8742A-CZ-TR_REFCLK0]
 PA1.Locked=true
@@ -433,7 +433,7 @@ STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelMacc-3af5c42c2206a57b
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelName-04cc21513a4c00497d36f683dc1ac56653cf48913a6e0991dfedf47d1d25481f=tanh_1_none
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelName-261939b161dc44065420a540fc0259d41888dd78aaf868c311cdcd05cd2aaf2b=tanh_2_8
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelName-3443cbf4418b63934b46dcde250dd3eae938f5492b6dcc18a218c1b4dd756886=relu_2_8
-STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelName-3af5c42c2206a57b421a3b5072419ecfab8425cb081f1568631f96a76b57f12d=relu_1
+STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelName-3af5c42c2206a57b421a3b5072419ecfab8425cb081f1568631f96a76b57f12d=relu_1_none
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelOutSizeByName-04cc21513a4c00497d36f683dc1ac56653cf48913a6e0991dfedf47d1d25481f={dense_3\=16}
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelOutSizeByName-261939b161dc44065420a540fc0259d41888dd78aaf868c311cdcd05cd2aaf2b={dense_3\=16}
 STMicroelectronics.X-CUBE-AI.5.0.0.NNModelInformation_ModelOutSizeByName-3443cbf4418b63934b46dcde250dd3eae938f5492b6dcc18a218c1b4dd756886={dense_3\=16}

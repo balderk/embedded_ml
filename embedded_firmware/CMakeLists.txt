@@ -8,7 +8,7 @@ SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_C_COMPILER arm-none-eabi-gcc)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
 set(CMAKE_AR arm-none-eabi-ar)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
@@ -32,7 +32,7 @@ SET(COMMON_FLAGS
     -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs\
      ${EXTRA_OPTS}")
 
-SET(OPT_LEVEL "-O3")
+SET(OPT_LEVEL "-O1")
 
 SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++11 ${OPT_LEVEL}")
 SET(CMAKE_C_FLAGS_INIT "${COMMON_FLAGS} -std=gnu18 ${OPT_LEVEL}")
