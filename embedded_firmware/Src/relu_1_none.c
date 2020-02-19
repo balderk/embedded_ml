@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    relu_1_none.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Feb 18 18:21:35 2020
+  * @date    Wed Feb 19 14:53:10 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -53,7 +53,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Tue Feb 18 18:21:35 2020"
+#define AI_TOOLS_DATE_TIME   "Wed Feb 19 14:53:10 2020"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__
