@@ -25,6 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sensor_data.h"
+
+#include "tanh_1_none.h"
+#include "tanh_2_8.h"
+#include "relu_1_none.h"
+#include "relu_2_8.h"
 #include "test.h"
 /* USER CODE END Includes */
 
@@ -70,18 +76,6 @@ static void MX_CRC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t i = 0;
-uint16_t j = 0;
-uint32_t delay = 0;
-
-static inline void incremet_stuff() {
-    HAL_Delay(delay);
-    delay = ((uint32_t) test[i][j]) % 50;
-    if (++j == TEST_NUM_COLS) {
-        j = 0;
-        i = i + 1 % TEST_NUM_ROWS;
-    }
-}
 /* USER CODE END 0 */
 
 /**
@@ -124,27 +118,37 @@ int main(void) {
     MX_USB_DEVICE_Init();
     MX_X_CUBE_AI_Init();
     /* USER CODE BEGIN 2 */
+    ai_handle network_relu1, network_tanh1;
+    ai_network_params network_params_relu, network_params2;
+    AI_RELU_1_NONE_DATA_WEIGHTS(network_params_relu.params)
+    ai_relu_1_none_create(&network_relu1, NULL);
+    ai_relu_1_none_create(&network_tanh1, NULL);
 
+    ai_relu_1_none_init(network_relu1, )
     /* USER CODE END 2 */
 
 
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+    double input_data[AI_RELU_1_NONE_IN_1_SIZE];
+    double target_data[AI_RELU_1_NONE_OUT_1_SIZE];
+    double output_data[AI_RELU_1_NONE_OUT_1_SIZE];
     while (1) {
-        incremet_stuff();
         SET_USER_LED(1);
-        incremet_stuff();
-        SET_USER_LED(2);
-        incremet_stuff();
-        SET_USER_LED(3);
-        incremet_stuff();
-        RESET_USER_LED(3);
-        incremet_stuff();
-        RESET_USER_LED(2);
-        incremet_stuff();
+        new_sensor_reading(SENSOR_DATA_TRAIN);
+        get_sensor_reading(&input_data);
+        get_sensor_values(&output_data);
         RESET_USER_LED(1);
-        incremet_stuff();
+
+        SET_USER_LED(2);
+        ai_relu_1_none_run(network_relu1, input_data, target_data);
+        RESET_USER_LED(2);
+        SET_USER_LED(3);
+        ai_tanh_1_none_run(network_tanh1, input_data, target_data);
+        RESET_USER_LED(3);
+        RESET_USER_LED(2);
+        RESET_USER_LED(1);
 
 
 
