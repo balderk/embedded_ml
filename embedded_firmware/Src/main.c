@@ -21,7 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "app_x-cube-ai.h"
-#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -52,8 +51,6 @@
 
 CRC_HandleTypeDef hcrc;
 
-ETH_HandleTypeDef heth;
-
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
@@ -65,9 +62,7 @@ void SystemClock_Config(void);
 
 static void MX_GPIO_Init(void);
 
-static void MX_ETH_Init(void);
-
-static void MX_USART3_UART_Init(void);
+void MX_USART3_UART_Init(void);
 
 static void MX_CRC_Init(void);
 /* USER CODE BEGIN PFP */
@@ -112,10 +107,7 @@ int main(void) {
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
-    MX_ETH_Init();
-    MX_USART3_UART_Init();
     MX_CRC_Init();
-    MX_USB_DEVICE_Init();
     MX_X_CUBE_AI_Init();
     /* USER CODE BEGIN 2 */
     /*
@@ -133,19 +125,19 @@ int main(void) {
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    double input_data[AI_RELU_1_NONE_IN_1_SIZE+1];
-    double target_data[AI_RELU_1_NONE_OUT_1_SIZE+1];
-    double output_data[AI_RELU_1_NONE_OUT_1_SIZE+1];
+    double input_data[AI_RELU_1_NONE_IN_1_SIZE + 1];
+    double target_data[AI_RELU_1_NONE_OUT_1_SIZE + 1];
+    double output_data[AI_RELU_1_NONE_OUT_1_SIZE + 1];
     uint8_t str_buff[512];
     while (1) {
         SET_USER_LED(1);
         new_sensor_reading(SENSOR_DATA_TRAIN);
         get_sensor_reading(input_data);
         get_sensor_values(output_data);
-        for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE+1; i++){
-            int len = snprintf((char *)str_buff, sizeof(str_buff), "%4d.%.2d ",
-                    (int) input_data[i],
-                               abs(((int)(input_data[i]*100)) - ((int) input_data[i])*100));
+        for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE + 1; i++) {
+            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
+                               (int) input_data[i],
+                               abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
                 HAL_UART_Transmit(&huart3, str_buff, len, 100);
@@ -221,9 +213,8 @@ void SystemClock_Config(void) {
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK) {
         Error_Handler();
     }
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART3 | RCC_PERIPHCLK_CLK48;
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART3;
     PeriphClkInitStruct.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
-    PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
         Error_Handler();
     }
@@ -259,51 +250,11 @@ static void MX_CRC_Init(void) {
 }
 
 /**
-  * @brief ETH Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ETH_Init(void) {
-
-    /* USER CODE BEGIN ETH_Init 0 */
-
-    /* USER CODE END ETH_Init 0 */
-
-    /* USER CODE BEGIN ETH_Init 1 */
-
-    /* USER CODE END ETH_Init 1 */
-    heth.Instance = ETH;
-    heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
-    heth.Init.PhyAddress = LAN8742A_PHY_ADDRESS;
-    heth.Init.MACAddr[0] = 0x00;
-    heth.Init.MACAddr[1] = 0x80;
-    heth.Init.MACAddr[2] = 0xE1;
-    heth.Init.MACAddr[3] = 0x00;
-    heth.Init.MACAddr[4] = 0x00;
-    heth.Init.MACAddr[5] = 0x00;
-    heth.Init.RxMode = ETH_RXPOLLING_MODE;
-    heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
-    heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
-
-    /* USER CODE BEGIN MACADDRESS */
-
-    /* USER CODE END MACADDRESS */
-
-    if (HAL_ETH_Init(&heth) != HAL_OK) {
-        Error_Handler();
-    }
-    /* USER CODE BEGIN ETH_Init 2 */
-
-    /* USER CODE END ETH_Init 2 */
-
-}
-
-/**
   * @brief USART3 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_USART3_UART_Init(void) {
+void MX_USART3_UART_Init(void) {
 
     /* USER CODE BEGIN USART3_Init 0 */
 
@@ -364,6 +315,22 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
 
+    /*Configure GPIO pins : RMII_MDC_Pin RMII_RXD0_Pin RMII_RXD1_Pin */
+    GPIO_InitStruct.Pin = RMII_MDC_Pin | RMII_RXD0_Pin | RMII_RXD1_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : RMII_REF_CLK_Pin RMII_MDIO_Pin RMII_CRS_DV_Pin */
+    GPIO_InitStruct.Pin = RMII_REF_CLK_Pin | RMII_MDIO_Pin | RMII_CRS_DV_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
     /*Configure GPIO pins : LD1_Pin DEBUG_1_Pin DEBUG_0_Pin LD3_Pin
                              LD2_Pin */
     GPIO_InitStruct.Pin = LD1_Pin | DEBUG_1_Pin | DEBUG_0_Pin | LD3_Pin
@@ -380,6 +347,14 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+    /*Configure GPIO pin : RMII_TXD1_Pin */
+    GPIO_InitStruct.Pin = RMII_TXD1_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(RMII_TXD1_GPIO_Port, &GPIO_InitStruct);
+
     /*Configure GPIO pin : USB_PowerSwitchOn_Pin */
     GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -392,6 +367,28 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : USB_SOF_Pin USB_ID_Pin USB_DM_Pin USB_DP_Pin */
+    GPIO_InitStruct.Pin = USB_SOF_Pin | USB_ID_Pin | USB_DM_Pin | USB_DP_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : USB_VBUS_Pin */
+    GPIO_InitStruct.Pin = USB_VBUS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(USB_VBUS_GPIO_Port, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : RMII_TX_EN_Pin RMII_TXD0_Pin */
+    GPIO_InitStruct.Pin = RMII_TX_EN_Pin | RMII_TXD0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
 }
 

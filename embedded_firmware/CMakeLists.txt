@@ -44,7 +44,7 @@ set(CMAKE_CXX_STANDARD 11)
 #add_definitions(-DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__FPU_PRESENT=1)
 add_definitions(-DUSE_HAL_DRIVER -DSTM32F767xx -DDEBUG)
 
-file(GLOB_RECURSE SOURCES "startup/*.*" "Middlewares/*.*" "Drivers/*.*" "Src/*.*")
+file(GLOB_RECURSE SOURCES "startup/*.*" "Drivers/*.*" "Src/*.*")
 
 include_directories(
         Inc

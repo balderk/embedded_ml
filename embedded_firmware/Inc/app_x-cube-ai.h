@@ -62,8 +62,8 @@ extern "C" {
 #include "tanh_2_8.h"
 #include "tanh_2_8_data.h"
 
-#define MIN_HEAP_SIZE 0x200
-#define MIN_STACK_SIZE 0x400
+#define MIN_HEAP_SIZE 0x800
+#define MIN_STACK_SIZE 0x800
 
 #define AI_MNETWORK_IN_1_SIZE_BYTES 32
 #define AI_MNETWORK_IN_NUM 1
@@ -91,8 +91,28 @@ extern "C" {
 void MX_X_CUBE_AI_Init(void);
 
 void MX_X_CUBE_AI_Process(void);
+
+int aiInit(const ai_u8 *activations);
+
+int aiRun(const void *in_data, void *out_data);
+
+/* Helper macro */
+#define AI_MIN(x_, y_) \
+  ( ((x_)<(y_)) ? (x_) : (y_) )
+
+#define AI_MAX(x_, y_) \
+  ( ((x_)>(y_)) ? (x_) : (y_) )
+
+#define AI_CLAMP(x_, min_, max_, type_) \
+  (type_) (AI_MIN(AI_MAX(x_, min_), max_))
+
+#define AI_ROUND(v_, type_) \
+  (type_) ( ((v_)<0) ? ((v_)-0.5f) : ((v_)+0.5f) )
+
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
+#define AI_MMETWORK_IN                AI_RELU_1_NONE_IN
+#define AI_MNETWORK_OUT               AI_RELU_1_NONE_OUT
 /* Multiple network support --------------------------------------------------*/
 
 typedef struct {

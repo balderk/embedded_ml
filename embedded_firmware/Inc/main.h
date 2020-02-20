@@ -120,6 +120,8 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
+
+void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN Private defines */
 #define SET_USER_LED(x) \
 ({\
