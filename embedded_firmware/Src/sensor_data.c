@@ -13,11 +13,11 @@
 static double current_reading[TEST_FEATURES_NUM_COLS];
 static double current_values[TEST_TARGET_NUM_COLS];
 
-void get_sensor_reading(double reading[TEST_FEATURES_NUM_COLS]) {
+void get_sensor_reading(float reading[TEST_FEATURES_NUM_COLS]) {
     memcpy(reading, current_reading, sizeof(current_reading));
 }
 
-void get_sensor_values(double values[TEST_TARGET_NUM_COLS]) {
+void get_sensor_values(float values[TEST_TARGET_NUM_COLS]) {
     memcpy(values, current_values, sizeof(current_values));
 }
 

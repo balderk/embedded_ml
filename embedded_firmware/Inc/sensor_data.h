@@ -11,9 +11,9 @@ typedef enum __sensor_data_source_t {
     SENSOR_DATA_TEST, SENSOR_DATA_TRAIN
 } sensor_data_source_t;
 
-void get_sensor_values(double values[AI_RELU_1_NONE_OUT_1_SIZE]);
+void get_sensor_values(float values[AI_RELU_1_NONE_OUT_1_SIZE]);
 
-void get_sensor_reading(double reading[AI_RELU_1_NONE_IN_1_SIZE]);
+void get_sensor_reading(float reading[AI_RELU_1_NONE_IN_1_SIZE]);
 
 void new_sensor_reading(sensor_data_source_t source);
 
