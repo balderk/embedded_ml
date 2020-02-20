@@ -25,7 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "sensor_data.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "tanh_1_none.h"
 #include "tanh_2_8.h"
 #include "relu_1_none.h"

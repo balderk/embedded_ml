@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    tanh_2_8.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Wed Feb 19 14:53:32 2020
+  * @date    Thu Feb 20 14:49:48 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -53,7 +53,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Wed Feb 19 14:53:32 2020"
+#define AI_TOOLS_DATE_TIME   "Thu Feb 20 14:49:48 2020"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__

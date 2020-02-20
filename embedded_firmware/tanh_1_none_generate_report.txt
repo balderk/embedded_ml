@@ -1,7 +1,7 @@
 Neural Network Tools for STM32 v1.2.0 (AI tools v5.0.0)
-Created date       : 2020-02-18 18:21:42
+Created date       : 2020-02-20 14:49:42
 
-Exec/report summary (generate dur=0.439s err=0)
+Exec/report summary (generate dur=0.419s err=0)
 ------------------------------------------------------------------------------------------------------------------------
 model file         : /home/balder/PycharmProjects/embedded_ml/model/results/64_tanh.h5
 type               : keras (keras_dump)
@@ -9,7 +9,7 @@ c_name             : tanh_1_none
 compression        : None
 quantize           : None
 L2r error          : NOT EVALUATED
-workspace dir      : /tmp/mxAI_workspace1809175984682284910919769601333611
+workspace dir      : /tmp/mxAI_workspace105654293585772766452808450730794
 output dir         : /home/balder/.stm32cubemx/stm32ai_output
 
 model_name         : _tanh

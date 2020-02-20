@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    tanh_1_none_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Wed Feb 19 14:53:15 2020
+  * @date    Thu Feb 20 14:49:42 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention

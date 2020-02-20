@@ -1,3 +1,4 @@
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,10 +53,77 @@ extern "C" {
 #include <string.h>
 #include "app_x-cube-ai.h"
 #include "main.h"
+//#include "constants_ai.h"
 #include "ai_datatypes_defines.h"
 
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
+/* USER CODE BEGIN initandrun */
+#include <stdlib.h>
+
+/* Global handle to reference the instance of the NN */
+static ai_handle relu_1_none = AI_HANDLE_NULL;
+static ai_buffer ai_input[AI_RELU_1_NONE_IN_NUM] = AI_RELU_1_NONE_IN;
+static ai_buffer ai_output[AI_RELU_1_NONE_OUT_NUM] = AI_RELU_1_NONE_OUT;
+
+/*
+ * Init function to create and initialize a NN.
+ */
+int aiInit(const ai_u8 *activations) {
+    ai_error err;
+
+    /* 1 - Specific AI data structure to provide the references of the
+     * activation/working memory chunk and the weights/bias parameters */
+    const ai_network_params params = {
+            AI_RELU_1_NONE_DATA_WEIGHTS(ai_relu_1_none_data_weights_get()),
+            AI_RELU_1_NONE_DATA_ACTIVATIONS(activations)
+    };
+
+    /* 2 - Create an instance of the NN */
+    err = ai_relu_1_none_create(&relu_1_none, AI_RELU_1_NONE_DATA_CONFIG);
+    if (err.type != AI_ERROR_NONE) {
+        return -1;
+    }
+
+    /* 3 - Initialize the NN - Ready to be used */
+    if (!ai_relu_1_none_init(relu_1_none, &params)) {
+        err = ai_relu_1_none_get_error(relu_1_none);
+        ai_relu_1_none_destroy(relu_1_none);
+        relu_1_none = AI_HANDLE_NULL;
+        return -2;
+    }
+
+    return 0;
+}
+
+/*
+ * Run function to execute an inference.
+ */
+int aiRun(const void *in_data, void *out_data) {
+    ai_i32 nbatch;
+    ai_error err;
+
+    /* Parameters checking */
+    if (!in_data || !out_data || !relu_1_none)
+        return -1;
+
+    /* Initialize input/output buffer handlers */
+    ai_input[0].n_batches = 1;
+    ai_input[0].data = AI_HANDLE_PTR(in_data);
+    ai_output[0].n_batches = 1;
+    ai_output[0].data = AI_HANDLE_PTR(out_data);
+
+    /* 2 - Perform the inference */
+    nbatch = ai_relu_1_none_run(relu_1_none, &ai_input[0], &ai_output[0]);
+    if (nbatch != 1) {
+        err = ai_relu_1_none_get_error(relu_1_none);
+        // ...
+        return err.code;
+    }
+
+    return 0;
+}
+/* USER CODE END initandrun */
 
 /*************************************************************************
   *

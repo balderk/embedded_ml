@@ -8,7 +8,7 @@ SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_C_COMPILER arm-none-eabi-gcc)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 set(CMAKE_AR arm-none-eabi-ar)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
@@ -28,7 +28,7 @@ SET(EXTRA_OPTS "-falign-functions=32 -falign-labels=32 -falign-loops=32 \
 
 
 SET(COMMON_FLAGS
-    "-mcpu=cortex-m7 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
+        "-mcpu=cortex-m7 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
     -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs\
      ${EXTRA_OPTS}")
 
@@ -51,8 +51,6 @@ include_directories(
         Middlewares/ST/AI/Inc
         Drivers/STM32F7xx_HAL_Driver/Inc
         Drivers/STM32F7xx_HAL_Driver/Inc/Legacy
-        Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-        Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
         Drivers/CMSIS/Device/ST/STM32F7xx/Include
         Drivers/CMSIS/Include
 )
@@ -60,7 +58,7 @@ include_directories(
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
 
 set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
+        "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
