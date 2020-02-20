@@ -111,21 +111,23 @@ int main(void) {
     MX_CRC_Init();
     MX_X_CUBE_AI_Init();
     /* USER CODE BEGIN 2 */
-    /*
-    ai_handle network_relu1, network_tanh1;
-    ai_network_params network_params_relu, network_params2;
-    AI_RELU_1_NONE_DATA_WEIGHTS(network_params_relu.params)
-    ai_relu_1_none_create(&network_relu1, NULL);
-    ai_relu_1_none_create(&network_tanh1, NULL);
-
-    ai_relu_1_none_init(network_relu1, )
-     */
+    ai_handle network;
+    ai_error error = ai_mnetwork_create(AI_RELU_1_NONE_MODEL_NAME, &network, NULL);
+    if (error.code != AI_ERROR_CODE_NONE){
+        SET_USER_LED(1);
+        while(1) {
+            __NOP();
+        }
+    }
     /* USER CODE END 2 */
 
 
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+    ai_buffer input = AI_RELU_1_NONE_IN;
+    //ai_buffer output;
+    //output = AI_RELU_1_NONE_OUT;
     double input_data[AI_RELU_1_NONE_IN_1_SIZE + 1];
     double target_data[AI_RELU_1_NONE_OUT_1_SIZE + 1];
     double output_data[AI_RELU_1_NONE_OUT_1_SIZE + 1];
@@ -135,6 +137,9 @@ int main(void) {
         new_sensor_reading(SENSOR_DATA_TRAIN);
         get_sensor_reading(input_data);
         get_sensor_values(output_data);
+
+        ai_mnetwork_run(network, &input_data, &output_data);
+
         for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE + 1; i++) {
             int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
                                (int) input_data[i],
@@ -146,7 +151,7 @@ int main(void) {
                 __NOP();
             }
         }
-        HAL_UART_Transmit(&huart3, "\n", 1, 100);
+        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
         HAL_Delay(100);
         SET_USER_LED(2);
         //ai_relu_1_none_run(network_relu1, input_data, target_data);
