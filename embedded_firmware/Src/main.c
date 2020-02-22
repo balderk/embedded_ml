@@ -27,11 +27,7 @@
 #include "sensor_data.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "tanh_1_none.h"
-#include "tanh_2_8.h"
 #include "relu_1_none.h"
-#include "relu_2_8.h"
-#include "test.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,105 +110,83 @@ int main(void) {
 
     MX_USART3_UART_Init();
 
-
-    ai_handle network;
-    const ai_network_params params = {
-            AI_RELU_1_NONE_DATA_WEIGHTS(ai_relu_1_none_data_weights_get()),
-            AI_RELU_1_NONE_DATA_ACTIVATIONS(big_chunk_of_data)
-    };
-    ai_error error = ai_mnetwork_create(AI_RELU_1_NONE_MODEL_NAME, &network, NULL);
-    if (error.code != AI_ERROR_CODE_NONE) {
-        SET_USER_LED(1);
-        while (1) {
-            __NOP();
-        }
-    }
     /* USER CODE END 2 */
 
 
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    ai_buffer input = AI_TANH_1_NONE_IN;//AI_BUFFER_OBJ_INIT(AI_BUFFER_FORMAT_FLOAT, 1, 1, 8, 1, NULL);
-    ai_buffer output = AI_TANH_1_NONE_OUT;
-    //output = AI_RELU_1_NONE_OUT;
-    float input_data[AI_RELU_1_NONE_IN_1_SIZE];
+    AI_ALIGNED(4)
     float target_data[AI_RELU_1_NONE_OUT_1_SIZE];
-    float output_data[AI_RELU_1_NONE_OUT_1_SIZE];
 
-    input.data = input_data;
-    output.data = output_data;
-    uint8_t str_buff[512];
-    ai_bool error_bool = ai_mnetwork_init(network, &params);
-    if (error_bool == false) {
-        SET_USER_LED(1);
-        ai_error err = ai_mnetwork_get_error(network);
-        int len = snprintf((char *) str_buff, sizeof(str_buff), "ERROR: code: %#X type; %#X", err.code, err.type);
-        if (len > 0 && len < sizeof(str_buff)) {
-            HAL_UART_Transmit(&huart3, str_buff, len, 100);
-        } else {
-            __NOP();
-        }
+    AI_ALIGNED(4)
+    static ai_u8 activations[AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE];
+    AI_ALIGNED(4)
+    static ai_i8 in_data[AI_RELU_1_NONE_IN_1_SIZE_BYTES];
 
+
+    AI_ALIGNED(4)
+    static ai_i8 out_data[AI_RELU_1_NONE_OUT_1_SIZE_BYTES];
+
+    static float *output_data = (float *) out_data;
+    static float *input_data = (float *) in_data;
+    if (aiInit(activations)) {
         while (1) {
             __NOP();
         }
     }
+
+    uint8_t str_buff[512];
+
     while (1) {
+        RESET_DEBUG_PIN(3);
         SET_USER_LED(1);
+        SET_DEBUG_PIN(1);
         new_sensor_reading(SENSOR_DATA_TRAIN);
         get_sensor_reading(input_data);
         get_sensor_values(target_data);
-
-        ai_i32 res = ai_mnetwork_run(network, &input, &output);
-
-        if (res >= 0) {
-            ai_error err = ai_mnetwork_get_error(network);
-            int len = snprintf((char *) str_buff, sizeof(str_buff), "ERROR: code: %#X type; %#X", err.code, err.type);
+        RESET_DEBUG_PIN(1);
+        SET_DEBUG_PIN(2);
+        aiRun(in_data, out_data);
+        RESET_DEBUG_PIN(2);
+        SET_DEBUG_PIN(3);
+        for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
+            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
+                               (int) input_data[i],
+                               abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
+            __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
                 HAL_UART_Transmit(&huart3, str_buff, len, 100);
             } else {
                 __NOP();
             }
-
-        } else {
-            for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
-                int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                                   (int) input_data[i],
-                                   abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
-                __DMB();
-                if (len > 0 && len < sizeof(str_buff)) {
-                    HAL_UART_Transmit(&huart3, str_buff, len, 100);
-                } else {
-                    __NOP();
-                }
-            }
-            HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
-            for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
-                int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                                   (int) target_data[i],
-                                   abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
-                __DMB();
-                if (len > 0 && len < sizeof(str_buff)) {
-                    HAL_UART_Transmit(&huart3, str_buff, len, 100);
-                } else {
-                    __NOP();
-                }
-            }
-            HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
-            for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
-                int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                                   (int) output_data[i],
-                                   abs(((int) (output_data[i] * 100)) - ((int) output_data[i]) * 100));
-                __DMB();
-                if (len > 0 && len < sizeof(str_buff)) {
-                    HAL_UART_Transmit(&huart3, str_buff, len, 100);
-                } else {
-                    __NOP();
-                }
-            }
-            HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
         }
+        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+        for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
+            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
+                               (int) target_data[i],
+                               abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
+            __DMB();
+            if (len > 0 && len < sizeof(str_buff)) {
+                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+            } else {
+                __NOP();
+            }
+        }
+        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+        for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
+            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
+                               (int) output_data[i],
+                               abs(((int) (output_data[i] * 100)) - ((int) output_data[i]) * 100));
+            __DMB();
+            if (len > 0 && len < sizeof(str_buff)) {
+                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+            } else {
+                __NOP();
+            }
+        }
+        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+
         HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
         HAL_Delay(100);
         SET_USER_LED(2);

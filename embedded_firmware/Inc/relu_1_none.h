@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    relu_1_none.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Thu Feb 20 14:49:38 2020
+  * @date    Fri Feb 21 11:28:54 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention

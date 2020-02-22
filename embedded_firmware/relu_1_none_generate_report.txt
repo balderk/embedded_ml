@@ -1,28 +1,28 @@
 Neural Network Tools for STM32 v1.2.0 (AI tools v5.0.0)
-Created date       : 2020-02-20 14:49:38
+Created date       : 2020-02-21 11:28:55
 
-Exec/report summary (generate dur=0.444s err=0)
+Exec/report summary (generate dur=1.241s err=0)
 ------------------------------------------------------------------------------------------------------------------------
-model file         : /home/balder/PycharmProjects/embedded_ml/model/results/64_relu.h5
+model file         : /home/balder/PycharmProjects/embedded_ml/model/results/512_relu.h5
 type               : keras (keras_dump)
 c_name             : relu_1_none
 compression        : None
 quantize           : None
 L2r error          : NOT EVALUATED
-workspace dir      : /tmp/mxAI_workspace105619672456933703554241794477278
+workspace dir      : /tmp/mxAI_workspace84917925446609750259132598908426
 output dir         : /home/balder/.stm32cubemx/stm32ai_output
 
 model_name         : _relu
-model_hash         : 190d716395660d0d798552bdb207d88d
+model_hash         : 74f663691bdf3c3a53265c9633926b28
 input              : input_0 [8 items, 32 B, ai_float, FLOAT32, (8,)]
 input (total)      : 32 B
-output             : dense_3 [4 items, 16 B, ai_float, FLOAT32, (4,)]
+output             : dense_4 [4 items, 16 B, ai_float, FLOAT32, (4,)]
 output (total)     : 16 B
-params #           : 5,308 items (20.73 KiB)
-macc               : 5,304
-weights (ro)       : 21,232 (20.73 KiB) 
-activations (rw)   : 512 (512 B) 
-ram (total)        : 560 (560 B) = 512 + 32 + 16
+params #           : 177,364 items (692.83 KiB)
+macc               : 177,360
+weights (ro)       : 709,456 (692.83 KiB) 
+activations (rw)   : 3,072 (3.00 KiB) 
+ram (total)        : 3,120 (3.05 KiB) = 3,072 + 32 + 16
 
 ------------------------------------------------------------------------------------------------------------------------
 id  layer (type)                    output shape      param #     connected to             macc           rom                
@@ -30,32 +30,37 @@ id  layer (type)                    output shape      param #     connected to  
 0   input_0 (Input)                 (8,)                                                                                     
     batch_normalization (ScaleBias) (8,)              16          input_0                  16             64                 
 ------------------------------------------------------------------------------------------------------------------------
-2   dense (Dense)                   (64,)             576         batch_normalization      512            2,304              
-    dense_nl (Nonlinearity)         (64,)                         dense                    64                                
+2   dense (Dense)                   (512,)            4,608       batch_normalization      4,096          18,432             
+    dense_nl (Nonlinearity)         (512,)                        dense                    512                               
 ------------------------------------------------------------------------------------------------------------------------
-3   dense_1 (Dense)                 (64,)             4,160       dense_nl                 4,096          16,640             
-    dense_1_nl (Nonlinearity)       (64,)                         dense_1                  64                                
+4   dense_1 (Dense)                 (256,)            131,328     dense_nl                 131,072        525,312            
+    dense_1_nl (Nonlinearity)       (256,)                        dense_1                  256                               
 ------------------------------------------------------------------------------------------------------------------------
-4   dense_2 (Dense)                 (8,)              520         dense_1_nl               512            2,080              
-    dense_2_nl (Nonlinearity)       (8,)                          dense_2                  8                                 
+5   dense_2 (Dense)                 (128,)            32,896      dense_1_nl               32,768         131,584            
+    dense_2_nl (Nonlinearity)       (128,)                        dense_2                  128                               
 ------------------------------------------------------------------------------------------------------------------------
-5   dense_3 (Dense)                 (4,)              36          dense_2_nl               32             144                
+6   dense_3 (Dense)                 (64,)             8,256       dense_2_nl               8,192          33,024             
+    dense_3_nl (Nonlinearity)       (64,)                         dense_3                  64                                
 ------------------------------------------------------------------------------------------------------------------------
-_relu p=5308(20.73 KBytes) macc=5304 rom=20.73 KBytes ram=512 B io_ram=48 B
+7   dense_4 (Dense)                 (4,)              260         dense_3_nl               256            1,040              
+------------------------------------------------------------------------------------------------------------------------
+_relu p=177364(692.83 KBytes) macc=177360 rom=692.83 KBytes ram=3.00 KiB io_ram=48 B
 
  
-Complexity per-layer - macc=5,304 rom=21,232
+Complexity per-layer - macc=177,360 rom=709,456
 ------------------------------------------------------------------------------------------------------------------------
 id      layer (type)                    macc                                    rom                                    
 ------------------------------------------------------------------------------------------------------------------------
-0       batch_normalization (ScaleBias) |                                 0.3%  |                                 0.3% 
-2       dense (Dense)                   ||||                              9.7%  |||||                            10.9% 
-2       dense_nl (Nonlinearity)         |                                 1.2%  |                                 0.0% 
-3       dense_1 (Dense)                 |||||||||||||||||||||||||||||||  77.2%  |||||||||||||||||||||||||||||||  78.4% 
-3       dense_1_nl (Nonlinearity)       |                                 1.2%  |                                 0.0% 
-4       dense_2 (Dense)                 ||||                              9.7%  ||||                              9.8% 
-4       dense_2_nl (Nonlinearity)       |                                 0.2%  |                                 0.0% 
-5       dense_3 (Dense)                 |                                 0.6%  |                                 0.7% 
+0       batch_normalization (ScaleBias) |                                 0.0%  |                                 0.0% 
+2       dense (Dense)                   |                                 2.3%  ||                                2.6% 
+2       dense_nl (Nonlinearity)         |                                 0.3%  |                                 0.0% 
+4       dense_1 (Dense)                 |||||||||||||||||||||||||||||||  73.9%  |||||||||||||||||||||||||||||||  74.0% 
+4       dense_1_nl (Nonlinearity)       |                                 0.1%  |                                 0.0% 
+5       dense_2 (Dense)                 ||||||||                         18.5%  ||||||||                         18.5% 
+5       dense_2_nl (Nonlinearity)       |                                 0.1%  |                                 0.0% 
+6       dense_3 (Dense)                 ||                                4.6%  ||                                4.7% 
+6       dense_3_nl (Nonlinearity)       |                                 0.0%  |                                 0.0% 
+7       dense_4 (Dense)                 |                                 0.1%  |                                 0.1% 
 ------------------------------------------------------------------------------------------------------------------------
 
 

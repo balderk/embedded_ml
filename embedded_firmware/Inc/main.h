@@ -132,6 +132,16 @@ void MX_USART3_UART_Init(void);
 ({\
     HAL_GPIO_WritePin(LD ## x ## _GPIO_Port, LD ## x ## _Pin, GPIO_PIN_RESET);\
 })
+
+#define SET_DEBUG_PIN(x) \
+({\
+    HAL_GPIO_WritePin(DEBUG_ ## x ## _GPIO_Port, DEBUG_ ## x ## _Pin, GPIO_PIN_SET);\
+})
+
+#define RESET_DEBUG_PIN(x) \
+({\
+    HAL_GPIO_WritePin(DEBUG_ ## x ## _GPIO_Port, DEBUG_ ## x ## _Pin, GPIO_PIN_RESET);\
+})
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

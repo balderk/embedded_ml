@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    relu_1_none_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Thu Feb 20 14:49:38 2020
+  * @date    Fri Feb 21 11:28:54 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -26,9 +26,9 @@
 
 #define AI_RELU_1_NONE_DATA_CONFIG           AI_HANDLE_NULL
 
-#define AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE     (512)
+#define AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE     (3072)
 
-#define AI_RELU_1_NONE_DATA_WEIGHTS_SIZE         (21232)
+#define AI_RELU_1_NONE_DATA_WEIGHTS_SIZE         (709456)
 
 #define AI_RELU_1_NONE_DATA_ACTIVATIONS(ptr_)  \
   AI_BUFFER_OBJ_INIT( \
