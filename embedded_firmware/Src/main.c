@@ -139,17 +139,17 @@ int main(void) {
     uint8_t str_buff[512];
 
     while (1) {
-        RESET_DEBUG_PIN(3);
+        RESET_DEBUG_PIN(2);
         SET_USER_LED(1);
-        SET_DEBUG_PIN(1);
+        SET_DEBUG_PIN(0);
         new_sensor_reading(SENSOR_DATA_TRAIN);
         get_sensor_reading(input_data);
         get_sensor_values(target_data);
+        RESET_DEBUG_PIN(0);
+        SET_DEBUG_PIN(1);
+        aiRun(in_data, out_data);
         RESET_DEBUG_PIN(1);
         SET_DEBUG_PIN(2);
-        aiRun(in_data, out_data);
-        RESET_DEBUG_PIN(2);
-        SET_DEBUG_PIN(3);
         for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
             int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
                                (int) input_data[i],

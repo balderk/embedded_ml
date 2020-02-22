@@ -10,8 +10,8 @@
 #include <stdint.h>
 #include <string.h>
 
-static double current_reading[TEST_FEATURES_NUM_COLS];
-static double current_values[TEST_TARGET_NUM_COLS];
+static float current_reading[TEST_FEATURES_NUM_COLS];
+static float current_values[TEST_TARGET_NUM_COLS];
 
 void get_sensor_reading(float reading[TEST_FEATURES_NUM_COLS]) {
     memcpy(reading, current_reading, sizeof(current_reading));
