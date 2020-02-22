@@ -32,7 +32,7 @@ SET(COMMON_FLAGS
     -g -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs\
      ${EXTRA_OPTS}")
 
-SET(OPT_LEVEL "-O3")
+SET(OPT_LEVEL "-O2")
 
 SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++11 ${OPT_LEVEL}")
 SET(CMAKE_C_FLAGS_INIT "${COMMON_FLAGS} -std=gnu18 ${OPT_LEVEL}")

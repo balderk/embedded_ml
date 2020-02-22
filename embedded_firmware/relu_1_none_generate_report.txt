@@ -1,7 +1,7 @@
 Neural Network Tools for STM32 v1.2.0 (AI tools v5.0.0)
-Created date       : 2020-02-22 14:05:27
+Created date       : 2020-02-22 15:33:54
 
-Exec/report summary (generate dur=1.640s err=0)
+Exec/report summary (generate dur=1.557s err=0)
 ------------------------------------------------------------------------------------------------------------------------
 model file         : /home/balder/PycharmProjects/embedded_ml/model/results/512_relu.h5
 type               : keras (keras_dump)
@@ -9,7 +9,7 @@ c_name             : relu_1_none
 compression        : None
 quantize           : None
 L2r error          : NOT EVALUATED
-workspace dir      : /tmp/mxAI_workspace1807074416156761841836612068541444
+workspace dir      : /tmp/mxAI_workspace1860155860554146812732045976528207
 output dir         : /home/balder/.stm32cubemx/stm32ai_output
 
 model_name         : _relu

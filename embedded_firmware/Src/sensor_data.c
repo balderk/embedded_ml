@@ -3,10 +3,10 @@
 //
 
 #include "sensor_data.h"
-#include "data/test_target.h"
-#include "data/train_target.h"
 #include "data/test_features.h"
+#include "data/test_target.h"
 #include "data/train_features.h"
+#include "data/train_target.h"
 #include <stdint.h>
 #include <string.h>
 

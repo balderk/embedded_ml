@@ -1,22 +1,22 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -47,7 +47,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+void custom_print(const char *format, ...);
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -123,25 +123,19 @@ void Error_Handler(void);
 
 void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN Private defines */
-#define SET_USER_LED(x) \
-({\
-    HAL_GPIO_WritePin(LD ## x ## _GPIO_Port, LD ## x ## _Pin, GPIO_PIN_SET);\
-})
+#define SET_USER_LED(x)                                                        \
+  ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_SET); })
 
-#define RESET_USER_LED(x) \
-({\
-    HAL_GPIO_WritePin(LD ## x ## _GPIO_Port, LD ## x ## _Pin, GPIO_PIN_RESET);\
-})
+#define RESET_USER_LED(x)                                                      \
+  ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_RESET); })
 
-#define SET_DEBUG_PIN(x) \
-({\
-    HAL_GPIO_WritePin(DEBUG_ ## x ## _GPIO_Port, DEBUG_ ## x ## _Pin, GPIO_PIN_SET);\
-})
+#define SET_DEBUG_PIN(x)                                                       \
+  ({ HAL_GPIO_WritePin(DEBUG_##x##_GPIO_Port, DEBUG_##x##_Pin, GPIO_PIN_SET); })
 
-#define RESET_DEBUG_PIN(x) \
-({\
-    HAL_GPIO_WritePin(DEBUG_ ## x ## _GPIO_Port, DEBUG_ ## x ## _Pin, GPIO_PIN_RESET);\
-})
+#define RESET_DEBUG_PIN(x)                                                     \
+  ({                                                                           \
+    HAL_GPIO_WritePin(DEBUG_##x##_GPIO_Port, DEBUG_##x##_Pin, GPIO_PIN_RESET); \
+  })
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -24,11 +24,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdarg.h>
+#include "relu_1_none.h"
 #include "sensor_data.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "relu_1_none.h"
-#include <math.h>
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -61,24 +62,80 @@ void SystemClock_Config(void);
 
 static void MX_GPIO_Init(void);
 
-void MX_USART3_UART_Init(void);
 
 static void MX_CRC_Init(void);
 
 /* USER CODE BEGIN PFP */
-static inline float L2_norm(float *data1, float *data2, uint16_t len) {
+uint8_t str_buff[512];
+uint8_t _str_buff[512];
+
+float L2_norm(float *data1, float *data2, uint16_t _len) {
     float ret_val = 0;
-    uint16_t orig_len = len;
-    for (; len > 0; len--) {
-        ret_val += powf((data1[len - 1] - data2[len - 1]), 2);
+    for (; _len > 0; _len--) {
+        ret_val += powf((data1[_len - 1] - data2[_len - 1]), 2);
     }
     return sqrtf(ret_val);
+}
+
+float mae(float *data1, float *data2, uint16_t _len) {
+    float ret_val = 0;
+    float orig_len = (float) _len;
+    if (_len == 0) {
+        return 0;
+    }
+    for (; _len > 0; _len--) {
+        ret_val += fabsf(data1[_len - 1] - data2[_len - 1]);
+    }
+    return ret_val / orig_len;
+}
+
+
+float mse(float *data1, float *data2, uint16_t _len) {
+    float ret_val = 0;
+    float orig_len = (float) _len;
+    if (_len == 0) {
+        return 0;
+    }
+    for (; _len > 0; _len--) {
+        ret_val += powf(data1[_len - 1] - data2[_len - 1], 2);
+    }
+    return ret_val / orig_len;
+}
+
+
+static inline void handle_ai_err(ai_error err) {
+    if (err.type != AI_ERROR_NONE) {
+        int len = snprintf((char *) str_buff, sizeof(str_buff), "ERROR: code: %#X type; %#X", err.code, err.type);
+        if (len > 0 && len < sizeof(str_buff)) {
+            HAL_UART_Transmit(&huart3, str_buff, len, 100);
+        } else {
+            __NOP();
+        }
+
+        while (1) {
+            __NOP();
+        }
+    }
+}
+
+void custom_print(const char *format, ...) {
+    va_list arg;
+    va_start(arg, format);
+    int len = vsnprintf((char *) _str_buff, sizeof(_str_buff), format, arg);
+    //va_end(arg);
+    va_end(arg);
+    __DMB();
+    if (len > 0 && len < sizeof(_str_buff)) {
+        HAL_UART_Transmit(&huart3, _str_buff, len, 100);
+    } else {
+        __NOP();
+    }
+
 }
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t big_chunk_of_data[1024 * 8];
 /* USER CODE END 0 */
 
 /**
@@ -126,117 +183,188 @@ int main(void) {
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+
+    AI_ALIGNED(4)
+    static ai_u8 relu_1_activations[AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE];
+    static ai_handle relu_1_none_handle = AI_HANDLE_NULL;
+    const ai_network_params relu_1_params = {
+            AI_RELU_1_NONE_DATA_WEIGHTS(ai_relu_1_none_data_weights_get()),
+            AI_RELU_1_NONE_DATA_ACTIVATIONS(relu_1_activations)};
+
+    AI_ALIGNED(4)
+    static ai_u8 relu_2_activations[AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE];
+    static ai_handle relu_1_8_handle = AI_HANDLE_NULL;
+    const ai_network_params relu_2_params = {
+            AI_RELU_1_NONE_DATA_WEIGHTS(ai_relu_1_none_data_weights_get()),
+            AI_RELU_1_NONE_DATA_ACTIVATIONS(relu_1_activations)};
+
+
+    ai_error err = ai_relu_1_none_create(&relu_1_none_handle, AI_RELU_1_NONE_DATA_CONFIG);
+    handle_ai_err(err);
+
+    err = ai_relu_1_none_create(&relu_1_8_handle, AI_RELU_1_8_DATA_CONFIG);
+    handle_ai_err(err);
+
+
+
+    /* 3 - Initialize the NN - Ready to be used */
+    if (!ai_relu_1_none_init(relu_1_none_handle, &relu_1_params)) {
+        err = ai_relu_1_none_get_error(relu_1_none_handle);
+        ai_relu_1_none_destroy(relu_1_none_handle);
+        relu_1_none_handle = AI_HANDLE_NULL;
+        handle_ai_err(err);
+    }
+    /* 3 - Initialize the NN - Ready to be used */
+    if (!ai_relu_1_8_init(relu_1_none_handle, &relu_1_params)) {
+        err = ai_relu_1_none_get_error(relu_1_none_handle);
+        ai_relu_1_none_destroy(relu_1_none_handle);
+        relu_1_none_handle = AI_HANDLE_NULL;
+        handle_ai_err(err);
+    }
+
     AI_ALIGNED(4)
     float target_data[AI_RELU_1_NONE_OUT_1_SIZE];
 
     AI_ALIGNED(4)
-    static ai_u8 activations[AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE];
-    AI_ALIGNED(4)
     static ai_i8 in_data[AI_RELU_1_NONE_IN_1_SIZE_BYTES];
 
-
     AI_ALIGNED(4)
-    static ai_i8 out_data[AI_RELU_1_NONE_OUT_1_SIZE_BYTES];
+    static ai_i8 out_data_1[AI_RELU_1_NONE_OUT_1_SIZE_BYTES];
+    AI_ALIGNED(4)
+    static ai_i8 out_data_2[AI_RELU_1_NONE_OUT_1_SIZE_BYTES];
 
-    static float *output_data = (float *) out_data;
+    static float *output_data_1 = (float *) out_data_1;
+    static float *output_data_2 = (float *) out_data_2;
     static float *input_data = (float *) in_data;
-    if (aiInit(activations)) {
-        while (1) {
-            __NOP();
-        }
-    }
-
-    uint8_t str_buff[512];
-
+    ai_buffer inputs[] = AI_RELU_1_NONE_IN;
+    ai_buffer outputs_1[] = AI_RELU_1_NONE_OUT;
+    ai_buffer outputs_2[] = AI_RELU_1_8_OUT;
+    ai_buffer *input = &inputs[0];
+    ai_buffer *output_1 = &outputs_1[0];
+    ai_buffer *output_2 = &outputs_2[0];
+    input->data = in_data;
+    output_1->data = out_data_1;
+    output_2->data = out_data_2;
     sensor_data_source_t type = SENSOR_DATA_TRAIN;
-    char typestr[64];
+    int n_batch;
     while (1) {
         RESET_DEBUG_PIN(2);
         SET_USER_LED(1);
         SET_DEBUG_PIN(0);
         if (type == SENSOR_DATA_TRAIN) {
             type = SENSOR_DATA_TEST;
-            memcpy(typestr, "TEST", sizeof("TEST"));
+            custom_print((char *) "%s:\n", "TEST");
         } else {
             type = SENSOR_DATA_TRAIN;
-            memcpy(typestr, "TRAIN", sizeof("TRAIN"));
+            custom_print((char *) "%s:\n", "TRAIN");
         }
         new_sensor_reading(type);
         get_sensor_reading(input_data);
         get_sensor_values(target_data);
         RESET_DEBUG_PIN(0);
         SET_DEBUG_PIN(1);
-        aiRun(in_data, out_data);
+        n_batch = ai_relu_1_none_run(relu_1_none_handle, input, output_1);
         RESET_DEBUG_PIN(1);
+        if (n_batch != 1) {
+            err = ai_relu_1_none_get_error(relu_1_none_handle);
+            handle_ai_err(err);
+        }
+
+
         SET_DEBUG_PIN(2);
-        {
-            int len = snprintf((char *) str_buff, sizeof(str_buff), "%s\n", typestr);
-            if (len > 0 && len < sizeof(str_buff)) {
-                HAL_UART_Transmit(&huart3, str_buff, len, 100);
-            } else {
-                __NOP();
-            }
+        n_batch = ai_relu_1_none_run(relu_1_8_handle, input, output_2);
+        RESET_DEBUG_PIN(2);
+        if (n_batch != 1) {
+            err = ai_relu_1_none_get_error(relu_1_8_handle);
+            handle_ai_err(err);
         }
 
+        custom_print("input data:\t");
         for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
-            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                               (int) input_data[i],
-                               abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) input_data[i],
+                    abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
-                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+                custom_print((char *) str_buff);
             } else {
                 __NOP();
             }
         }
-        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+        custom_print("\ntarget:  \t");
         for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
-            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                               (int) target_data[i],
-                               abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) target_data[i],
+                    abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
-                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+                custom_print((char *) str_buff);
             } else {
                 __NOP();
             }
         }
-        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+        custom_print("\noutput 1:\t");
         for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
-            int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
-                               (int) output_data[i],
-                               abs(((int) (output_data[i] * 100)) - ((int) output_data[i]) * 100));
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_1[i],
+                    abs(((int) (output_data_1[i] * 100)) - ((int) output_data_1[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
-                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+                custom_print((char *) str_buff);
             } else {
                 __NOP();
             }
         }
 
-        float l2 = L2_norm(target_data, output_data, AI_RELU_1_NONE_OUT_1_SIZE);
-        int len = snprintf((char *) str_buff, sizeof(str_buff), "\nL2: %4d.%.2d\n", (int) l2,
-                           abs(((int) (l2 * 100)) - ((int) l2) * 100));
-        if (len > 0 && len < sizeof(str_buff)) {
-            HAL_UART_Transmit(&huart3, str_buff, len, 100);
-        } else {
-            __NOP();
+        custom_print("\noutput 2:\t");
+        for (int i = 0; i < AI_RELU_1_NONE_OUT_1_SIZE; i++) {
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_2[i],
+                    abs(((int) (output_data_2[i] * 100)) - ((int) output_data_2[i]) * 100));
+            __DMB();
+            if (len > 0 && len < sizeof(str_buff)) {
+                custom_print((char *) str_buff);
+            } else {
+                __NOP();
+            }
         }
-        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
 
-        HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
+        float mae_1 = mae(target_data, output_data_1, AI_RELU_1_NONE_OUT_1_SIZE);
+        float mae_2 = mae(target_data, output_data_2, AI_RELU_1_NONE_OUT_1_SIZE);
+        float mae_3 = mae(output_data_2, output_data_1, AI_RELU_1_NONE_OUT_1_SIZE);
+
+        custom_print("\nmae t - 1: %4d.%.2d \n",
+                     (int) mae_1, (abs(((int) (mae_1 * 100)) - ((int) mae_1) * 100)));
+
+        custom_print("mae t - 2: %4d.%.2d \n",
+                     (int) mae_2, abs(((int) (mae_2 * 100)) - ((int) mae_2) * 100));
+
+        custom_print("mae 1 - 2: %4d.%.2d \n",
+                     (int) mae_3, abs(((int) (mae_3 * 100)) - ((int) mae_3) * 100));
+
+        float mse_1 = L2_norm(target_data, output_data_1, AI_RELU_1_NONE_OUT_1_SIZE);
+        float mse_2 = L2_norm(target_data, output_data_2, AI_RELU_1_NONE_OUT_1_SIZE);
+        float mse_3 = L2_norm(output_data_2, output_data_1, AI_RELU_1_NONE_OUT_1_SIZE);
+
+        custom_print("mse t - 1: %4d.%.2d \n",
+                     (int) mse_1, (abs(((int) (mse_1 * 100)) - ((int) mse_1) * 100)));
+
+        custom_print("mse t - 2: %4d.%.2d \n",
+                     (int) mse_2, abs(((int) (mse_2 * 100)) - ((int) mse_2) * 100));
+
+        custom_print("mse 1 - 2: %4d.%.2d \n",
+                     (int) mse_3, abs(((int) (mse_3 * 100)) - ((int) mse_3) * 100));
+
+        custom_print("\n");
+
         HAL_Delay(10);
         SET_USER_LED(2);
-        //ai_relu_1_none_run(network_relu1, input_data, target_data);
         SET_USER_LED(3);
 
         HAL_Delay(10);
-        //ai_tanh_1_none_run(network_tanh1, input_data, target_data);
         RESET_USER_LED(3);
         RESET_USER_LED(2);
         RESET_USER_LED(1);
-
-
 
         /* USER CODE END WHILE */
 
@@ -502,8 +630,10 @@ void Error_Handler(void) {
 void assert_failed(uint8_t *file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* User can add his own implementation to report the file name and line
+     number,
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line)
+   */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
