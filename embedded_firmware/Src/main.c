@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "relu_1_none.h"
+#include <math.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,8 +64,16 @@ static void MX_GPIO_Init(void);
 void MX_USART3_UART_Init(void);
 
 static void MX_CRC_Init(void);
-/* USER CODE BEGIN PFP */
 
+/* USER CODE BEGIN PFP */
+static inline float L2_norm(float *data1, float *data2, uint16_t len) {
+    float ret_val = 0;
+    uint16_t orig_len = len;
+    for (; len > 0; len--) {
+        ret_val += powf((data1[len - 1] - data2[len - 1]), 2);
+    }
+    return sqrtf(ret_val);
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -138,11 +148,20 @@ int main(void) {
 
     uint8_t str_buff[512];
 
+    sensor_data_source_t type = SENSOR_DATA_TRAIN;
+    char typestr[64];
     while (1) {
         RESET_DEBUG_PIN(2);
         SET_USER_LED(1);
         SET_DEBUG_PIN(0);
-        new_sensor_reading(SENSOR_DATA_TRAIN);
+        if (type == SENSOR_DATA_TRAIN) {
+            type = SENSOR_DATA_TEST;
+            memcpy(typestr, "TEST", sizeof("TEST"));
+        } else {
+            type = SENSOR_DATA_TRAIN;
+            memcpy(typestr, "TRAIN", sizeof("TRAIN"));
+        }
+        new_sensor_reading(type);
         get_sensor_reading(input_data);
         get_sensor_values(target_data);
         RESET_DEBUG_PIN(0);
@@ -150,6 +169,15 @@ int main(void) {
         aiRun(in_data, out_data);
         RESET_DEBUG_PIN(1);
         SET_DEBUG_PIN(2);
+        {
+            int len = snprintf((char *) str_buff, sizeof(str_buff), "%s\n", typestr);
+            if (len > 0 && len < sizeof(str_buff)) {
+                HAL_UART_Transmit(&huart3, str_buff, len, 100);
+            } else {
+                __NOP();
+            }
+        }
+
         for (int i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
             int len = snprintf((char *) str_buff, sizeof(str_buff), "%4d.%.2d ",
                                (int) input_data[i],
@@ -185,15 +213,24 @@ int main(void) {
                 __NOP();
             }
         }
+
+        float l2 = L2_norm(target_data, output_data, AI_RELU_1_NONE_OUT_1_SIZE);
+        int len = snprintf((char *) str_buff, sizeof(str_buff), "\nL2: %4d.%.2d\n", (int) l2,
+                           abs(((int) (l2 * 100)) - ((int) l2) * 100));
+        if (len > 0 && len < sizeof(str_buff)) {
+            HAL_UART_Transmit(&huart3, str_buff, len, 100);
+        } else {
+            __NOP();
+        }
         HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
 
         HAL_UART_Transmit(&huart3, (uint8_t *) "\n", 1, 100);
-        HAL_Delay(100);
+        HAL_Delay(10);
         SET_USER_LED(2);
         //ai_relu_1_none_run(network_relu1, input_data, target_data);
         SET_USER_LED(3);
 
-        HAL_Delay(100);
+        HAL_Delay(10);
         //ai_tanh_1_none_run(network_tanh1, input_data, target_data);
         RESET_USER_LED(3);
         RESET_USER_LED(2);
@@ -373,10 +410,8 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : LD1_Pin DEBUG_1_Pin DEBUG_0_Pin LD3_Pin
-                             LD2_Pin */
-    GPIO_InitStruct.Pin = LD1_Pin | DEBUG_1_Pin | DEBUG_0_Pin | LD3_Pin
-                          | LD2_Pin;
+    /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
+    GPIO_InitStruct.Pin = LD1_Pin | LD3_Pin | LD2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -386,8 +421,15 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Pin = DEBUG_4_Pin | DEBUG_3_Pin | DEBUG_2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : DEBUG_1_Pin DEBUG_0_Pin */
+    GPIO_InitStruct.Pin = DEBUG_1_Pin | DEBUG_0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /*Configure GPIO pin : RMII_TXD1_Pin */
     GPIO_InitStruct.Pin = RMII_TXD1_Pin;
