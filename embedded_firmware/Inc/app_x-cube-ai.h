@@ -53,10 +53,14 @@ extern "C" {
   */
 /* Includes ------------------------------------------------------------------*/
 #include "ai_platform.h"
-#include "relu_1_none.h"
-#include "relu_1_none_data.h"
-#include "relu_1_8.h"
-#include "relu_1_8_data.h"
+#include "relu_512.h"
+#include "relu_512_data.h"
+#include "relu_512_c.h"
+#include "relu_512_c_data.h"
+#include "relu_64.h"
+#include "relu_64_data.h"
+#include "tanh_64.h"
+#include "tanh_64_data.h"
 
 #define MIN_HEAP_SIZE 0x800
 #define MIN_STACK_SIZE 0x800
@@ -77,10 +81,12 @@ extern "C" {
     data_out_1 \
   }; \
 
-#define AI_RELU_1_NONE_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
-#define AI_RELU_1_8_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
+#define AI_RELU_512_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
+#define AI_RELU_512_C_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
+#define AI_RELU_64_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
+#define AI_TANH_64_DATA_ACTIVATIONS_START_ADDR 0xFFFFFFFF
 
-#define AI_MNETWORK_DATA_ACTIVATIONS_INT_SIZE AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE
+#define AI_MNETWORK_DATA_ACTIVATIONS_INT_SIZE AI_RELU_512_DATA_ACTIVATIONS_SIZE
 
 void MX_X_CUBE_AI_Init(void);
 
@@ -105,8 +111,8 @@ int aiRun(const void *in_data, void *out_data);
 
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
-#define AI_MMETWORK_IN                AI_RELU_1_NONE_IN
-#define AI_MNETWORK_OUT               AI_RELU_1_NONE_OUT
+#define AI_MMETWORK_IN                AI_RELU_512_IN
+#define AI_MNETWORK_OUT               AI_RELU_512_OUT
 /* Multiple network support --------------------------------------------------*/
 
 typedef struct {
@@ -134,7 +140,7 @@ typedef struct {
     ai_u32 actBufferSize;
 } ai_network_entry_t;
 
-#define AI_MNETWORK_NUMBER  (2)
+#define AI_MNETWORK_NUMBER  (4)
 
 AI_API_DECLARE_BEGIN
 

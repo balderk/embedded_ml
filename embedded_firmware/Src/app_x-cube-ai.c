@@ -62,36 +62,11 @@ extern "C" {
 #include <stdlib.h>
 
 /* Global handle to reference the instance of the NN */
-static ai_handle relu_1_none = AI_HANDLE_NULL;
-static ai_buffer ai_input[AI_RELU_1_NONE_IN_NUM] = AI_RELU_1_NONE_IN;
-static ai_buffer ai_output[AI_RELU_1_NONE_OUT_NUM] = AI_RELU_1_NONE_OUT;
 
 /*
  * Init function to create and initialize a NN.
  */
 int aiInit(const ai_u8 *activations) {
-    ai_error err;
-
-    /* 1 - Specific AI data structure to provide the references of the
-     * activation/working memory chunk and the weights/bias parameters */
-    const ai_network_params params = {
-            AI_RELU_1_NONE_DATA_WEIGHTS(ai_relu_1_none_data_weights_get()),
-            AI_RELU_1_NONE_DATA_ACTIVATIONS(activations)};
-
-    /* 2 - Create an instance of the NN */
-    err = ai_relu_1_none_create(&relu_1_none, AI_RELU_1_NONE_DATA_CONFIG);
-    if (err.type != AI_ERROR_NONE) {
-        return -1;
-    }
-
-    /* 3 - Initialize the NN - Ready to be used */
-    if (!ai_relu_1_none_init(relu_1_none, &params)) {
-        err = ai_relu_1_none_get_error(relu_1_none);
-        ai_relu_1_none_destroy(relu_1_none);
-        relu_1_none = AI_HANDLE_NULL;
-        return -2;
-    }
-
     return 0;
 }
 
@@ -99,27 +74,6 @@ int aiInit(const ai_u8 *activations) {
  * Run function to execute an inference.
  */
 int aiRun(const void *in_data, void *out_data) {
-    ai_i32 nbatch;
-    ai_error err;
-
-    /* Parameters checking */
-    if (!in_data || !out_data || !relu_1_none)
-        return -1;
-
-    /* Initialize input/output buffer handlers */
-    ai_input[0].n_batches = 1;
-    ai_input[0].data = AI_HANDLE_PTR(in_data);
-    ai_output[0].n_batches = 1;
-    ai_output[0].data = AI_HANDLE_PTR(out_data);
-
-    /* 2 - Perform the inference */
-    nbatch = ai_relu_1_none_run(relu_1_none, &ai_input[0], &ai_output[0]);
-    if (nbatch != 1) {
-        err = ai_relu_1_none_get_error(relu_1_none);
-        // ...
-        return err.code;
-    }
-
     return 0;
 }
 /* USER CODE END initandrun */
@@ -131,71 +85,13 @@ void MX_X_CUBE_AI_Init(void) {
     /* USER CODE BEGIN 0 */
     /* Activation/working buffer is allocated as a static memory chunk
      * (bss section) */
-    AI_ALIGNED(4)
-    static ai_u8 activations[AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE];
 
-    aiInit(activations);
     /* USER CODE END 0 */
 }
 
 void MX_X_CUBE_AI_Process(void) {
     /* USER CODE BEGIN 1 */
-    int nb_run = 20;
-    int res;
 
-    /* Example of definition of the buffers to store the tensor input/output */
-    /*  type is dependent of the expected format                             */
-    AI_ALIGNED(4)
-    static ai_i8 in_data[AI_RELU_1_NONE_IN_1_SIZE_BYTES];
-
-    AI_ALIGNED(4)
-    static ai_i8 out_data[AI_RELU_1_NONE_OUT_1_SIZE_BYTES];
-
-    /* Retrieve format/type of the first input tensor - index 0 */
-    const ai_buffer_format fmt_ = AI_BUFFER_FORMAT(&ai_input[0]);
-    const uint32_t type_ = AI_BUFFER_FMT_GET_TYPE(fmt_);
-
-    /* Prepare parameters for float to Qmn conversion */
-    const ai_i16 N_ = AI_BUFFER_FMT_GET_FBITS(fmt_);
-    const ai_float scale_ = (0x1U << N_);
-    const ai_i16 M_ =
-            AI_BUFFER_FMT_GET_BITS(fmt_) - AI_BUFFER_FMT_GET_SIGN(fmt_) - N_;
-    const ai_float max_ = (ai_float) (0x1U << M_);
-
-    /* Perform nb_rub inferences (batch = 1) */
-    while (--nb_run) {
-
-        /* ---------------------------------------- */
-        /* Data generation and Pre-Process          */
-        /* ---------------------------------------- */
-        /* - fill the input buffer with random data */
-        for (ai_size i = 0; i < AI_RELU_1_NONE_IN_1_SIZE; i++) {
-
-            /* Generate random data in the range [-1, 1] */
-            ai_float val = 2.0f * (ai_float) rand() / (ai_float) RAND_MAX - 1.0f;
-
-            /* Convert the data if necessary */
-            if (type_ == AI_BUFFER_FMT_TYPE_FLOAT) {
-                ((ai_float *) in_data)[i] = val;
-            } else { /* AI_BUFFER_FMT_TYPE_Q */
-                /* Scale the values in the range [-2^M, 2^M] */
-                val *= max_;
-                /* Convert float to Qmn format */
-                const ai_i32 tmp_ = AI_ROUND(val * scale_, ai_i32);
-                in_data[i] = AI_CLAMP(tmp_, -128, 127, ai_i8);
-            }
-        }
-
-        /* Perform the inference */
-        res = aiRun(in_data, out_data);
-        if (res) {
-            // ...
-            return;
-        }
-
-        /* Post-Process - process the output buffer */
-        // ...
-    }
     /* USER CODE END 1 */
 }
 /* Multiple network support --------------------------------------------------*/
@@ -205,36 +101,68 @@ void MX_X_CUBE_AI_Process(void) {
 
 static const ai_network_entry_t networks[AI_MNETWORK_NUMBER] = {
         {
-                .name = (const char *) AI_RELU_1_NONE_MODEL_NAME,
-                .config = AI_RELU_1_NONE_DATA_CONFIG,
-                .ai_get_info = ai_relu_1_none_get_info,
-                .ai_create = ai_relu_1_none_create,
-                .ai_destroy = ai_relu_1_none_destroy,
-                .ai_get_error = ai_relu_1_none_get_error,
-                .ai_init = ai_relu_1_none_init,
-                .ai_run = ai_relu_1_none_run,
-                .ai_forward = ai_relu_1_none_forward,
-                .ai_data_weights_get_default = ai_relu_1_none_data_weights_get,
-                .params = {AI_RELU_1_NONE_DATA_WEIGHTS(0),
-                           AI_RELU_1_NONE_DATA_ACTIVATIONS(0)},
-                .extActBufferStartAddr = AI_RELU_1_NONE_DATA_ACTIVATIONS_START_ADDR,
-                .actBufferSize = AI_RELU_1_NONE_DATA_ACTIVATIONS_SIZE
+                .name = (const char *) AI_RELU_512_MODEL_NAME,
+                .config = AI_RELU_512_DATA_CONFIG,
+                .ai_get_info = ai_relu_512_get_info,
+                .ai_create = ai_relu_512_create,
+                .ai_destroy = ai_relu_512_destroy,
+                .ai_get_error = ai_relu_512_get_error,
+                .ai_init = ai_relu_512_init,
+                .ai_run = ai_relu_512_run,
+                .ai_forward = ai_relu_512_forward,
+                .ai_data_weights_get_default = ai_relu_512_data_weights_get,
+                .params = {AI_RELU_512_DATA_WEIGHTS(0),
+                           AI_RELU_512_DATA_ACTIVATIONS(0)},
+                .extActBufferStartAddr = AI_RELU_512_DATA_ACTIVATIONS_START_ADDR,
+                .actBufferSize = AI_RELU_512_DATA_ACTIVATIONS_SIZE
         },
         {
-                .name = (const char *) AI_RELU_1_8_MODEL_NAME,
-                .config = AI_RELU_1_8_DATA_CONFIG,
-                .ai_get_info = ai_relu_1_8_get_info,
-                .ai_create = ai_relu_1_8_create,
-                .ai_destroy = ai_relu_1_8_destroy,
-                .ai_get_error = ai_relu_1_8_get_error,
-                .ai_init = ai_relu_1_8_init,
-                .ai_run = ai_relu_1_8_run,
-                .ai_forward = ai_relu_1_8_forward,
-                .ai_data_weights_get_default = ai_relu_1_8_data_weights_get,
-                .params = {AI_RELU_1_8_DATA_WEIGHTS(0),
-                           AI_RELU_1_8_DATA_ACTIVATIONS(0)},
-                .extActBufferStartAddr = AI_RELU_1_8_DATA_ACTIVATIONS_START_ADDR,
-                .actBufferSize = AI_RELU_1_8_DATA_ACTIVATIONS_SIZE
+                .name = (const char *) AI_RELU_512_C_MODEL_NAME,
+                .config = AI_RELU_512_C_DATA_CONFIG,
+                .ai_get_info = ai_relu_512_c_get_info,
+                .ai_create = ai_relu_512_c_create,
+                .ai_destroy = ai_relu_512_c_destroy,
+                .ai_get_error = ai_relu_512_c_get_error,
+                .ai_init = ai_relu_512_c_init,
+                .ai_run = ai_relu_512_c_run,
+                .ai_forward = ai_relu_512_c_forward,
+                .ai_data_weights_get_default = ai_relu_512_c_data_weights_get,
+                .params = {AI_RELU_512_C_DATA_WEIGHTS(0),
+                           AI_RELU_512_C_DATA_ACTIVATIONS(0)},
+                .extActBufferStartAddr = AI_RELU_512_C_DATA_ACTIVATIONS_START_ADDR,
+                .actBufferSize = AI_RELU_512_C_DATA_ACTIVATIONS_SIZE
+        },
+        {
+                .name = (const char *) AI_RELU_64_MODEL_NAME,
+                .config = AI_RELU_64_DATA_CONFIG,
+                .ai_get_info = ai_relu_64_get_info,
+                .ai_create = ai_relu_64_create,
+                .ai_destroy = ai_relu_64_destroy,
+                .ai_get_error = ai_relu_64_get_error,
+                .ai_init = ai_relu_64_init,
+                .ai_run = ai_relu_64_run,
+                .ai_forward = ai_relu_64_forward,
+                .ai_data_weights_get_default = ai_relu_64_data_weights_get,
+                .params = {AI_RELU_64_DATA_WEIGHTS(0),
+                           AI_RELU_64_DATA_ACTIVATIONS(0)},
+                .extActBufferStartAddr = AI_RELU_64_DATA_ACTIVATIONS_START_ADDR,
+                .actBufferSize = AI_RELU_64_DATA_ACTIVATIONS_SIZE
+        },
+        {
+                .name = (const char *) AI_TANH_64_MODEL_NAME,
+                .config = AI_TANH_64_DATA_CONFIG,
+                .ai_get_info = ai_tanh_64_get_info,
+                .ai_create = ai_tanh_64_create,
+                .ai_destroy = ai_tanh_64_destroy,
+                .ai_get_error = ai_tanh_64_get_error,
+                .ai_init = ai_tanh_64_init,
+                .ai_run = ai_tanh_64_run,
+                .ai_forward = ai_tanh_64_forward,
+                .ai_data_weights_get_default = ai_tanh_64_data_weights_get,
+                .params = {AI_TANH_64_DATA_WEIGHTS(0),
+                           AI_TANH_64_DATA_ACTIVATIONS(0)},
+                .extActBufferStartAddr = AI_TANH_64_DATA_ACTIVATIONS_START_ADDR,
+                .actBufferSize = AI_TANH_64_DATA_ACTIVATIONS_SIZE
         },
 };
 
