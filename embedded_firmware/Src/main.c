@@ -349,7 +349,7 @@ int main(void) {
             handle_ai_err(err);
         }
 
-        custom_print("input data:\t");
+        custom_print("%20s:\t", "input data");
         for (int i = 0; i < AI_RELU_64_IN_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) input_data[i],
@@ -361,7 +361,7 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\ntarget:  \t");
+        custom_print("\n%20s:\t", "target");
         for (int i = 0; i < AI_RELU_64_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) target_data[i],
@@ -373,7 +373,7 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\noutput relu 64:\t");
+        custom_print("\n%20s:\t", "output relu 64");
         for (int i = 0; i < AI_RELU_64_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_64[i],
@@ -385,7 +385,7 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\noutput relu 512:\t");
+        custom_print("\n%20s:\t", "output relu 512");
         for (int i = 0; i < AI_RELU_512_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_512[i],
@@ -397,7 +397,7 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\noutput relu 512 c:\t");
+        custom_print("\n%20s:\t", "output relu 512 c");
         for (int i = 0; i < AI_RELU_512_C_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_512_c[i],
@@ -409,7 +409,7 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\noutput tanh 64:\t");
+        custom_print("\n%20s:\t", "output tanh 64");
         for (int i = 0; i < AI_TANH_64_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_tanh_64[i],
@@ -427,16 +427,16 @@ int main(void) {
         float mae_relu_512_c = mae(target_data, output_data_relu_512_c, AI_RELU_512_C_OUT_1_SIZE);
         float mae_tanh_64 = mae(target_data, output_data_tanh_64, AI_TANH_64_OUT_1_SIZE);
 
-        custom_print("mae relu 64: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mae relu 64",
                      (int) mae_relu_64, (abs(((int) (mae_relu_64 * 100)) - ((int) mae_relu_64) * 100)));
 
-        custom_print("mae relu 512: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mae relu 512",
                      (int) mae_relu_512, (abs(((int) (mae_relu_512 * 100)) - ((int) mae_relu_512) * 100)));
 
-        custom_print("mae relu 512 c: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mae relu 512 c",
                      (int) mae_relu_512_c, (abs(((int) (mae_relu_512_c * 100)) - ((int) mae_relu_512_c) * 100)));
 
-        custom_print("mae tanh 64: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mae tanh 64",
                      (int) mae_tanh_64, (abs(((int) (mae_tanh_64 * 100)) - ((int) mae_tanh_64) * 100)));
 
         float mse_relu_64 = mse(target_data, output_data_relu_64, AI_RELU_64_OUT_1_SIZE);
@@ -444,16 +444,16 @@ int main(void) {
         float mse_relu_512_c = mse(target_data, output_data_relu_512_c, AI_RELU_512_C_OUT_1_SIZE);
         float mse_tanh_64 = mse(target_data, output_data_tanh_64, AI_TANH_64_OUT_1_SIZE);
 
-        custom_print("mse relu 64: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mse relu 64",
                      (int) mse_relu_64, (abs(((int) (mse_relu_64 * 100)) - ((int) mse_relu_64) * 100)));
 
-        custom_print("mse relu 512: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mse relu 512",
                      (int) mse_relu_512, (abs(((int) (mse_relu_512 * 100)) - ((int) mse_relu_512) * 100)));
 
-        custom_print("mse relu 512 c: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mse relu 512 c",
                      (int) mse_relu_512_c, (abs(((int) (mse_relu_512_c * 100)) - ((int) mse_relu_512_c) * 100)));
 
-        custom_print("mse tanh 64: %4d.%.2d \n",
+        custom_print("%20s: %4d.%.2d \n", "mse tanh 64",
                      (int) mse_tanh_64, (abs(((int) (mse_tanh_64 * 100)) - ((int) mse_tanh_64) * 100)));
 
         custom_print("\n");
