@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "relu_64.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -184,121 +183,98 @@ int main(void) {
     /// allocate the data types
     /// RELU 64
     AI_ALIGNED(4)
-    static ai_u8 relu_64_activations[AI_RELU_64_DATA_ACTIVATIONS_SIZE];
-    static ai_handle relu_64_handle = AI_HANDLE_NULL;
-    const ai_network_params relu_64_params = {
-            AI_RELU_64_DATA_WEIGHTS(ai_relu_64_data_weights_get()),
-            AI_RELU_64_DATA_ACTIVATIONS(relu_64_activations)};
+    static ai_u8 nn1_activations[AI_NN1_DATA_ACTIVATIONS_SIZE];
+    static ai_handle nn1_handle = AI_HANDLE_NULL;
+    const ai_network_params nn1_params = {
+            AI_NN1_DATA_WEIGHTS(ai_nn1_data_weights_get()),
+            AI_NN1_DATA_ACTIVATIONS(nn1_activations)};
 
     /// RELU 512
     AI_ALIGNED(4)
-    static ai_u8 relu_512_activations[AI_RELU_512_DATA_ACTIVATIONS_SIZE];
-    static ai_handle relu_512_handle = AI_HANDLE_NULL;
-    const ai_network_params relu_512_params = {
-            AI_RELU_512_DATA_WEIGHTS(ai_relu_512_data_weights_get()),
-            AI_RELU_512_DATA_ACTIVATIONS(relu_512_activations)};
-
-    /// RELU 512 COMPRESSED
-    AI_ALIGNED(4)
-    static ai_u8 relu_512_c_activations[AI_RELU_512_DATA_ACTIVATIONS_SIZE];
-    static ai_handle relu_512_c_handle = AI_HANDLE_NULL;
-    const ai_network_params relu_512_c_params = {
-            AI_RELU_512_C_DATA_WEIGHTS(ai_relu_512_c_data_weights_get()),
-            AI_RELU_512_C_DATA_ACTIVATIONS(relu_512_c_activations)};
+    static ai_u8 nn2_activations[AI_NN2_DATA_ACTIVATIONS_SIZE];
+    static ai_handle nn2_handle = AI_HANDLE_NULL;
+    const ai_network_params nn2_params = {
+            AI_NN2_DATA_WEIGHTS(ai_nn2_data_weights_get()),
+            AI_NN2_DATA_ACTIVATIONS(nn2_activations)};
 
     /// TANH 64
     AI_ALIGNED(4)
-    static ai_u8 tanh_64_activations[AI_RELU_512_DATA_ACTIVATIONS_SIZE];
-    static ai_handle tanh_64_handle = AI_HANDLE_NULL;
-    const ai_network_params tanh_64_params = {
-            AI_TANH_64_DATA_WEIGHTS(ai_tanh_64_data_weights_get()),
-            AI_TANH_64_DATA_ACTIVATIONS(tanh_64_activations)};
+    static ai_u8 nn3_activations[AI_NN3_DATA_ACTIVATIONS_SIZE];
+    static ai_handle nn3_handle = AI_HANDLE_NULL;
+    const ai_network_params nn3_params = {
+            AI_NN3_DATA_WEIGHTS(ai_nn3_data_weights_get()),
+            AI_NN3_DATA_ACTIVATIONS(nn3_activations)};
 
     /// Create the networks
-    err = ai_relu_64_create(&relu_64_handle, AI_RELU_64_DATA_CONFIG);
+    err = ai_nn1_create(&nn1_handle, AI_NN1_DATA_CONFIG);
     handle_ai_err(err);
 
-    err = ai_relu_512_create(&relu_512_handle, AI_RELU_512_DATA_CONFIG);
+    err = ai_nn2_create(&nn2_handle, AI_NN2_DATA_CONFIG);
     handle_ai_err(err);
 
-    err = ai_relu_512_c_create(&relu_512_c_handle, AI_RELU_512_C_DATA_CONFIG);
-    handle_ai_err(err);
-
-    err = ai_tanh_64_create(&tanh_64_handle, AI_TANH_64_DATA_CONFIG);
+    err = ai_nn3_create(&nn3_handle, AI_NN3_DATA_CONFIG);
     handle_ai_err(err);
 
 
 
     /// Initialize the networks
-    if (!ai_relu_64_init(relu_64_handle, &relu_64_params)) {
-        err = ai_relu_64_get_error(relu_64_handle);
-        ai_relu_64_destroy(relu_64_handle);
-        relu_64_handle = AI_HANDLE_NULL;
+    if (!ai_nn1_init(nn1_handle, &nn1_params)) {
+        err = ai_nn1_get_error(nn1_handle);
+        ai_nn1_destroy(nn1_handle);
+        nn1_handle = AI_HANDLE_NULL;
         handle_ai_err(err);
     }
 
-    if (!ai_relu_512_init(relu_512_handle, &relu_512_params)) {
-        err = ai_relu_512_get_error(relu_512_handle);
-        ai_relu_512_destroy(relu_512_handle);
-        relu_512_handle = AI_HANDLE_NULL;
+    if (!ai_nn2_init(nn2_handle, &nn2_params)) {
+        err = ai_nn2_get_error(nn2_handle);
+        ai_nn2_destroy(nn2_handle);
+        nn2_handle = AI_HANDLE_NULL;
         handle_ai_err(err);
     }
 
-    if (!ai_relu_512_c_init(relu_512_c_handle, &relu_512_c_params)) {
-        err = ai_relu_512_c_get_error(relu_512_c_handle);
-        ai_relu_512_c_destroy(relu_512_c_handle);
-        relu_512_c_handle = AI_HANDLE_NULL;
-        handle_ai_err(err);
-    }
 
-    if (!ai_tanh_64_init(tanh_64_handle, &tanh_64_params)) {
-        err = ai_tanh_64_get_error(tanh_64_handle);
-        ai_tanh_64_destroy(tanh_64_handle);
-        tanh_64_handle = AI_HANDLE_NULL;
+    if (!ai_nn3_init(nn3_handle, &nn3_params)) {
+        err = ai_nn3_get_error(nn3_handle);
+        ai_nn3_destroy(nn3_handle);
+        nn3_handle = AI_HANDLE_NULL;
         handle_ai_err(err);
     }
 
     /// Preparing the data in an out
     AI_ALIGNED(4)
-    float target_data[AI_RELU_64_OUT_1_SIZE];
+    float target_data[AI_NN1_OUT_1_SIZE];
 
     AI_ALIGNED(4)
-    static ai_i8 in_data[AI_RELU_64_IN_1_SIZE_BYTES];
+    static ai_i8 in_data[AI_NN1_IN_1_SIZE_BYTES];
 
     AI_ALIGNED(4)
-    static ai_i8 out_data_relu_64[AI_RELU_64_OUT_1_SIZE_BYTES];
+    static ai_i8 out_data_nn1[AI_NN1_OUT_1_SIZE_BYTES];
     AI_ALIGNED(4)
-    static ai_i8 out_data_relu_512[AI_RELU_512_OUT_1_SIZE_BYTES];
+    static ai_i8 out_data_nn2[AI_NN2_OUT_1_SIZE_BYTES];
     AI_ALIGNED(4)
-    static ai_i8 out_data_relu_512_c[AI_RELU_512_C_OUT_1_SIZE_BYTES];
-    AI_ALIGNED(4)
-    static ai_i8 out_data_tanh_64[AI_TANH_64_OUT_1_SIZE_BYTES];
+    static ai_i8 out_data_nn3[AI_NN3_OUT_1_SIZE_BYTES];
 
 
-    static float *output_data_relu_64 = (float *) out_data_relu_64;
-    static float *output_data_relu_512 = (float *) out_data_relu_512;
-    static float *output_data_relu_512_c = (float *) out_data_relu_512_c;
-    static float *output_data_tanh_64 = (float *) out_data_tanh_64;
+    static float *output_data_nn1 = (float *) out_data_nn1;
+    static float *output_data_nn2 = (float *) out_data_nn2;
+    static float *output_data_nn3 = (float *) out_data_nn3;
 
     static float *input_data = (float *) in_data;
 
-    ai_buffer inputs[] = AI_RELU_64_IN;
-    ai_buffer outputs_relu_64[] = AI_RELU_64_OUT;
-    ai_buffer outputs_relu_512[] = AI_RELU_512_OUT;
-    ai_buffer outputs_relu_512_c[] = AI_RELU_512_C_OUT;
-    ai_buffer outputs_tanh_64[] = AI_TANH_64_OUT;
+    ai_buffer inputs[] = AI_NN1_IN;
+    ai_buffer outputs_nn1[] = AI_NN1_OUT;
+    ai_buffer outputs_nn2[] = AI_NN2_OUT;
+    ai_buffer outputs_nn3[] = AI_NN3_OUT;
 
     ai_buffer *input = &inputs[0];
-    ai_buffer *output_relu_64 = &outputs_relu_64[0];
-    ai_buffer *output_relu_512 = &outputs_relu_512[0];
-    ai_buffer *output_relu_512_c = &outputs_relu_512_c[0];
-    ai_buffer *output_tanh_64 = &outputs_tanh_64[0];
+    ai_buffer *output_nn1 = &outputs_nn1[0];
+    ai_buffer *output_nn2 = &outputs_nn2[0];
+    ai_buffer *output_nn3 = &outputs_nn3[0];
 
     input->data = in_data;
-    output_relu_64->data = output_data_relu_64;
-    output_relu_512->data = output_data_relu_512;
-    output_relu_512_c->data = output_data_relu_512_c;
-    output_tanh_64->data = output_data_tanh_64;
+    output_nn1->data = output_data_nn1;
+    output_nn2->data = output_data_nn2;
+    output_nn3->data = output_data_nn3;
 
     sensor_data_source_t type = SENSOR_DATA_TRAIN;
     int n_batch;
@@ -317,36 +293,29 @@ int main(void) {
         get_sensor_values(target_data);
         RESET_DEBUG_PIN(0);
         SET_DEBUG_PIN(1);
-        n_batch = ai_relu_64_run(relu_64_handle, input, output_relu_64);
+        n_batch = ai_nn1_run(nn1_handle, input, output_nn1);
         RESET_DEBUG_PIN(1);
         if (n_batch != 1) {
-            err = ai_relu_64_get_error(relu_64_handle);
+            err = ai_nn1_get_error(nn1_handle);
             handle_ai_err(err);
         }
         SET_DEBUG_PIN(2);
-        n_batch = ai_relu_512_run(relu_512_handle, input, output_relu_512);
+        n_batch = ai_nn2_run(nn2_handle, input, output_nn2);
         RESET_DEBUG_PIN(2);
         if (n_batch != 1) {
-            err = ai_relu_512_get_error(relu_512_handle);
+            err = ai_nn2_get_error(nn2_handle);
             handle_ai_err(err);
         }
-        SET_DEBUG_PIN(1);
-        n_batch = ai_relu_512_c_run(relu_512_c_handle, input, output_relu_512_c);
-        RESET_DEBUG_PIN(1);
+        SET_DEBUG_PIN(3);
+        n_batch = ai_nn3_run(nn3_handle, input, output_nn3);
+        RESET_DEBUG_PIN(3);
         if (n_batch != 1) {
-            err = ai_relu_512_c_get_error(relu_512_c_handle);
+            err = ai_nn3_get_error(nn3_handle);
             handle_ai_err(err);
         }
-        SET_DEBUG_PIN(2);
-        n_batch = ai_tanh_64_run(tanh_64_handle, input, output_tanh_64);
-        RESET_DEBUG_PIN(2);
-        if (n_batch != 1) {
-            err = ai_tanh_64_get_error(tanh_64_handle);
-            handle_ai_err(err);
-        }
-
+        SET_USER_LED(2);
         custom_print("%20s:\t", "input data");
-        for (int i = 0; i < AI_RELU_64_IN_1_SIZE; i++) {
+        for (int i = 0; i < AI_NN1_IN_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) input_data[i],
                     abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
@@ -358,7 +327,7 @@ int main(void) {
             }
         }
         custom_print("\n%20s:\t", "target");
-        for (int i = 0; i < AI_RELU_64_OUT_1_SIZE; i++) {
+        for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
             int len = snprintf(
                     (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) target_data[i],
                     abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
@@ -369,11 +338,11 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output relu 64");
-        for (int i = 0; i < AI_RELU_64_OUT_1_SIZE; i++) {
+        custom_print("\n%20s:\t", "output NN1");
+        for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_64[i],
-                    abs(((int) (output_data_relu_64[i] * 100)) - ((int) output_data_relu_64[i]) * 100));
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn1[i],
+                    abs(((int) (output_data_nn1[i] * 100)) - ((int) output_data_nn1[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
                 custom_print((char *) str_buff);
@@ -381,11 +350,11 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output relu 512");
-        for (int i = 0; i < AI_RELU_512_OUT_1_SIZE; i++) {
+        custom_print("\n%20s:\t", "output NN2");
+        for (int i = 0; i < AI_NN2_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_512[i],
-                    abs(((int) (output_data_relu_512[i] * 100)) - ((int) output_data_relu_512[i]) * 100));
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn2[i],
+                    abs(((int) (output_data_nn2[i] * 100)) - ((int) output_data_nn2[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
                 custom_print((char *) str_buff);
@@ -393,23 +362,11 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output relu 512 c");
-        for (int i = 0; i < AI_RELU_512_C_OUT_1_SIZE; i++) {
+        custom_print("\n%20s:\t", "output NN3");
+        for (int i = 0; i < AI_NN3_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_relu_512_c[i],
-                    abs(((int) (output_data_relu_512_c[i] * 100)) - ((int) output_data_relu_512_c[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
-        }
-        custom_print("\n%20s:\t", "output tanh 64");
-        for (int i = 0; i < AI_TANH_64_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_tanh_64[i],
-                    abs(((int) (output_data_tanh_64[i] * 100)) - ((int) output_data_tanh_64[i]) * 100));
+                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn3[i],
+                    abs(((int) (output_data_nn3[i] * 100)) - ((int) output_data_nn3[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
                 custom_print((char *) str_buff);
@@ -418,54 +375,41 @@ int main(void) {
             }
         }
         custom_print("\n");
-        float mae_relu_64 = mae(target_data, output_data_relu_64, AI_RELU_64_OUT_1_SIZE);
-        float mae_relu_512 = mae(target_data, output_data_relu_512, AI_RELU_512_OUT_1_SIZE);
-        float mae_relu_512_c = mae(target_data, output_data_relu_512_c, AI_RELU_512_C_OUT_1_SIZE);
-        float mae_tanh_64 = mae(target_data, output_data_tanh_64, AI_TANH_64_OUT_1_SIZE);
-
-        custom_print("%20s: %4d.%.2d \n", "mae relu 64",
-                     (int) mae_relu_64, (abs(((int) (mae_relu_64 * 100)) - ((int) mae_relu_64) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mae relu 512",
-                     (int) mae_relu_512, (abs(((int) (mae_relu_512 * 100)) - ((int) mae_relu_512) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mae relu 512 c",
-                     (int) mae_relu_512_c, (abs(((int) (mae_relu_512_c * 100)) - ((int) mae_relu_512_c) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mae tanh 64",
-                     (int) mae_tanh_64, (abs(((int) (mae_tanh_64 * 100)) - ((int) mae_tanh_64) * 100)));
-
-        float mse_relu_64 = mse(target_data, output_data_relu_64, AI_RELU_64_OUT_1_SIZE);
-        float mse_relu_512 = mse(target_data, output_data_relu_512, AI_RELU_512_OUT_1_SIZE);
-        float mse_relu_512_c = mse(target_data, output_data_relu_512_c, AI_RELU_512_C_OUT_1_SIZE);
-        float mse_tanh_64 = mse(target_data, output_data_tanh_64, AI_TANH_64_OUT_1_SIZE);
-
-        custom_print("%20s: %4d.%.2d \n", "mse relu 64",
-                     (int) mse_relu_64, (abs(((int) (mse_relu_64 * 100)) - ((int) mse_relu_64) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mse relu 512",
-                     (int) mse_relu_512, (abs(((int) (mse_relu_512 * 100)) - ((int) mse_relu_512) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mse relu 512 c",
-                     (int) mse_relu_512_c, (abs(((int) (mse_relu_512_c * 100)) - ((int) mse_relu_512_c) * 100)));
-
-        custom_print("%20s: %4d.%.2d \n", "mse tanh 64",
-                     (int) mse_tanh_64, (abs(((int) (mse_tanh_64 * 100)) - ((int) mse_tanh_64) * 100)));
-
-        custom_print("\n");
-
-        HAL_Delay(10);
-        SET_USER_LED(2);
         SET_USER_LED(3);
+        float mae_nn1 = mae(target_data, output_data_nn1, AI_NN1_OUT_1_SIZE);
+        float mae_nn2 = mae(target_data, output_data_nn2, AI_NN2_OUT_1_SIZE);
+        float mae_nn3 = mae(target_data, output_data_nn3, AI_NN3_OUT_1_SIZE);
 
-        HAL_Delay(10);
+        custom_print("%20s: %4d.%.2d \n", "mae NN1",
+                     (int) mae_nn1, (abs(((int) (mae_nn1 * 100)) - ((int) mae_nn1) * 100)));
+
+        custom_print("%20s: %4d.%.2d \n", "mae NN2",
+                     (int) mae_nn2, (abs(((int) (mae_nn2 * 100)) - ((int) mae_nn2) * 100)));
+
+        custom_print("%20s: %4d.%.2d \n", "mae NN3",
+                     (int) mae_nn3, (abs(((int) (mae_nn3 * 100)) - ((int) mae_nn3) * 100)));
+
+        float mse_nn1 = mse(target_data, output_data_nn1, AI_NN1_OUT_1_SIZE);
+        float mse_nn2 = mse(target_data, output_data_nn2, AI_NN2_OUT_1_SIZE);
+        float mse_nn3 = mse(target_data, output_data_nn3, AI_NN3_OUT_1_SIZE);
+
+        custom_print("%20s: %4d.%.2d \n", "mse NN1",
+                     (int) mse_nn1, (abs(((int) (mse_nn1 * 100)) - ((int) mse_nn1) * 100)));
+
+        custom_print("%20s: %4d.%.2d \n", "mse NN2",
+                     (int) mse_nn2, (abs(((int) (mse_nn2 * 100)) - ((int) mse_nn2) * 100)));
+
+        custom_print("%20s: %4d.%.2d \n", "mse NN3",
+                     (int) mse_nn3, (abs(((int) (mse_nn3 * 100)) - ((int) mse_nn3) * 100)));
+
+        custom_print("\n");
+
         RESET_USER_LED(3);
         RESET_USER_LED(2);
         RESET_USER_LED(1);
 
         /* USER CODE END WHILE */
 
-        MX_X_CUBE_AI_Process();
         /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */
@@ -610,11 +554,11 @@ static void MX_GPIO_Init(void) {
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin : USER_Btn_Pin */
-    GPIO_InitStruct.Pin = USER_Btn_Pin;
+    /*Configure GPIO pin : PC13 */
+    GPIO_InitStruct.Pin = GPIO_PIN_13;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
     GPIO_InitStruct.Pin = LD1_Pin | LD3_Pin | LD2_Pin;
@@ -649,6 +593,10 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+
+    /* EXTI interrupt init*/
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 

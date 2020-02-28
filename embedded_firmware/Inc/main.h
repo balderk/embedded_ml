@@ -37,7 +37,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+#define CONSERVE_POWER 0
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -58,8 +58,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define USER_Btn_Pin GPIO_PIN_13
-#define USER_Btn_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
 #define MCO_GPIO_Port GPIOH
 #define LD1_Pin GPIO_PIN_0
@@ -93,12 +91,17 @@ void Error_Handler(void);
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+#if CONSERVE_POWER == 1
+#define SET_USER_LED(x)  ((void *) x)
+
+#define RESET_USER_LED(x)  ((void *) x)
+#else
 #define SET_USER_LED(x)                                                        \
   ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_SET); })
 
 #define RESET_USER_LED(x)                                                      \
   ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_RESET); })
-
+#endif
 #define SET_DEBUG_PIN(x)                                                       \
   ({ HAL_GPIO_WritePin(DEBUG_##x##_GPIO_Port, DEBUG_##x##_Pin, GPIO_PIN_SET); })
 

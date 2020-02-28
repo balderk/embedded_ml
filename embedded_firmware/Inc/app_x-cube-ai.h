@@ -60,8 +60,8 @@ extern "C" {
 #include "nn3.h"
 #include "nn3_data.h"
 
-#define MIN_HEAP_SIZE 0x2000
-#define MIN_STACK_SIZE 0x2000
+#define MIN_HEAP_SIZE 0x4000
+#define MIN_STACK_SIZE 0x800
 
 #define AI_MNETWORK_IN_1_SIZE_BYTES 32
 #define AI_MNETWORK_IN_NUM 1
