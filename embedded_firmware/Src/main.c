@@ -69,13 +69,6 @@ static void MX_CRC_Init(void);
 uint8_t str_buff[512];
 uint8_t _str_buff[512];
 
-float L2_norm(float *data1, float *data2, uint16_t _len) {
-    float ret_val = 0;
-    for (; _len > 0; _len--) {
-        ret_val += powf((data1[_len - 1] - data2[_len - 1]), 2);
-    }
-    return sqrtf(ret_val);
-}
 
 float mae(float *data1, float *data2, uint16_t _len) {
     float ret_val = 0;
