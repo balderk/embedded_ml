@@ -21,8 +21,8 @@ void get_sensor_values(float values[TEST_TARGET_NUM_COLS]) {
     memcpy(values, current_values, sizeof(current_values));
 }
 
+static uint16_t test_i = 0, train_i = 0;
 void new_sensor_reading(sensor_data_source_t source) {
-    static uint16_t test_i = 0, train_i = 0;
     switch (source) {
         case SENSOR_DATA_TEST:
             memcpy(current_reading, test_features[test_i], sizeof(current_reading));

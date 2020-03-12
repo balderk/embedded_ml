@@ -274,12 +274,19 @@ int main(void) {
     while (1) {
         SET_USER_LED(1);
         SET_DEBUG_PIN(0);
-        if (type == SENSOR_DATA_TRAIN) {
-            type = SENSOR_DATA_TEST;
-            custom_print((char *) "%s:\n", "TEST");
-        } else {
-            type = SENSOR_DATA_TRAIN;
-            custom_print((char *) "%s:\n", "TRAIN");
+        switch (type) {
+            case SENSOR_DATA_TRAIN:
+                type = SENSOR_DATA_TEST;
+                custom_print((char *) "%s:\n", "TEST");
+                break;
+            case SENSOR_DATA_TEST:
+                type = SENSOR_DATA_TRAIN;
+                custom_print((char *) "%s:\n", "TRAIN");
+                break;
+            default:
+                while (1) {
+                    __NOP();
+                }
         }
         new_sensor_reading(type);
         get_sensor_reading(input_data);
