@@ -12,6 +12,7 @@ import tensorflow.keras.optimizers as optimizers
 from sklearn.model_selection import train_test_split
 import sklearn.metrics as skm
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.losses import mean_absolute_percentage_error
 
 import tensorflow.keras.backend as kb
 
@@ -25,19 +26,19 @@ tf.get_logger().setLevel('ERROR')
 from tensorflow.keras.utils import model_to_dot, plot_model
 
 
-def mean_relative_mae(y_actual, y_pred) -> tf.Tensor:
+def mean_absolute_relative_error(y_actual, y_pred) -> tf.Tensor:
     return kb.mean(kb.abs(y_actual - y_pred) / y_actual)
 
 
-def max_relative_mae(y_actual, y_pred) -> tf.Tensor:
+def max_absolute_relative_error(y_actual, y_pred) -> tf.Tensor:
     return kb.max(kb.abs(y_actual - y_pred) / y_actual)
 
 
-def np_mean_relative_mae(y_actual, y_pred):
+def np_mean_absolute_relative_error(y_actual, y_pred):
     return np.mean(np.abs(y_actual - y_pred) / y_actual)
 
 
-def np_max_relative_mae(y_actual, y_pred):
+def np_max_absolute_relative_error(y_actual, y_pred):
     return np.max(np.abs(y_actual - y_pred) / y_actual)
 
 
@@ -49,8 +50,8 @@ def train_model(config: dict) -> dict:
 
     model.compile(
         optimizer=opt,
-        loss='mae',
-        metrics=['mean_absolute_error', max_relative_mae]
+        loss=mean_absolute_percentage_error,
+        metrics=['mean_absolute_error', mean_absolute_relative_error]
         # loss='mean_absolute_error',
         # metrics=['mean_absolute_error']
     )
@@ -92,9 +93,9 @@ def train_model(config: dict) -> dict:
             verbose=False,
         )
 
-        mae.extend(hist.history['max_relative_mae'])
+        mae.extend(hist.history['mean_absolute_relative_error'])
 
-        for val in hist.history['val_max_relative_mae']:
+        for val in hist.history['val_mean_absolute_relative_error']:
             mae_val.extend([val for _ in range(val_freq)])
 
         line_mae.set_data(range(len(mae)), mae)
@@ -103,7 +104,8 @@ def train_model(config: dict) -> dict:
         center_num = epoch_chunk_size
         tmp_min = min([min(mae[-center_num:]), min(mae_val[-center_num:])])
         tmp_max = max([max(mae[-center_num:]), max(mae_val[-center_num:])])
-        axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
+        axs.set_ylim(max(min([tmp_min * 0.9, tmp_min - 1]), 0), max([tmp_max * 1.1, tmp_max + 1]))
+        axs.set_ylim(max(min([tmp_min * 0.9, tmp_min - 1]), 0), min(max([tmp_max * 1.1, tmp_max + 1]), max(mae_val)))
 
         plt.pause(1e-3)
         if len(hist.history['loss']) != epoch_chunk_size:
@@ -112,62 +114,16 @@ def train_model(config: dict) -> dict:
 
     tmp_min = min([min(mae), min(mae_val)])
     tmp_max = max([max(mae), max(mae_val)])
-    axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
+    axs.set_ylim(max(min([tmp_min * 0.9, tmp_min - 1]), 0), min(max([tmp_max * 1.1, tmp_max + 1]), max(mae_val)))
 
     plt.pause(1e-3)
     plt.savefig(f'{name}_loss_stage_1.png')
 
-    model.compile(
-        optimizer=opt,
-        loss="mae",  # mean_relative_mae,
-        metrics=['mean_absolute_error', max_relative_mae]
-        # loss='mean_absolute_error',
-        # metrics=['mean_absolute_error']
-    )
-
-    for ini_epoch, epoch in zip(chunks[:-1], chunks[1:]):
-        hist = model.fit(
-            train_f,
-            train_t,
-            initial_epoch=ini_epoch,
-            epochs=epoch,
-            batch_size=len(train_t),
-            validation_data=(test_f, test_t),
-            validation_freq=val_freq,
-            callbacks=[early_stop],
-            verbose=False,
-        )
-
-        mae.extend(hist.history['max_relative_mae'])
-
-        for val in hist.history['val_max_relative_mae']:
-            mae_val.extend([val for _ in range(val_freq)])
-
-        line_mae.set_data(range(len(mae)), mae)
-        line_mae_val.set_data(range(len(mae_val)), mae_val)
-        axs.set_xlim(0, len(mae))
-        center_num = epoch_chunk_size
-        tmp_min = min([min(mae[-center_num:]), min(mae_val[-center_num:])])
-        tmp_max = max([max(mae[-center_num:]), max(mae_val[-center_num:])])
-        axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
-
-        plt.pause(1e-3)
-        if len(hist.history['loss']) != epoch_chunk_size:
-            # early stopping
-            break
-
-    tmp_min = min([min(mae), min(mae_val)])
-    tmp_max = max([max(mae), max(mae_val)])
-    axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
-
-    plt.pause(1e-3)
-    plt.savefig(f'{name}_loss_stage_2.png')
-
     opt = config.get('optimizer_2', optimizers.Adam(lr=1e-4))
     model.compile(
         optimizer=opt,
-        loss="mae",  # mean_relative_mae,
-        metrics=['mean_absolute_error', max_relative_mae]
+        loss=mean_absolute_percentage_error,  # mean_relative_mae,
+        metrics=['mean_absolute_error', mean_absolute_relative_error]
         # loss='mean_absolute_error',
         # metrics=['mean_absolute_error']
     )
@@ -185,9 +141,9 @@ def train_model(config: dict) -> dict:
             verbose=False,
         )
 
-        mae.extend(hist.history['max_relative_mae'])
+        mae.extend(hist.history['mean_absolute_relative_error'])
 
-        for val in hist.history['val_max_relative_mae']:
+        for val in hist.history['val_mean_absolute_relative_error']:
             mae_val.extend([val for _ in range(val_freq)])
 
         line_mae.set_data(range(len(mae)), mae)
@@ -196,7 +152,7 @@ def train_model(config: dict) -> dict:
         center_num = epoch_chunk_size
         tmp_min = min([min(mae[-center_num:]), min(mae_val[-center_num:])])
         tmp_max = max([max(mae[-center_num:]), max(mae_val[-center_num:])])
-        axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
+        axs.set_ylim(max(min([tmp_min * 0.9, tmp_min - 1]), 0), min(max([tmp_max * 1.1, tmp_max + 1]), max(mae_val)))
 
         plt.pause(1e-3)
         if len(hist.history['loss']) != epoch_chunk_size:
@@ -205,7 +161,7 @@ def train_model(config: dict) -> dict:
 
     tmp_min = min([min(mae), min(mae_val)])
     tmp_max = max([max(mae), max(mae_val)])
-    axs.set_ylim(min([tmp_min * 0.9, tmp_min - 1]), max([tmp_max * 1.1, tmp_max + 1]))
+    axs.set_ylim(max(min([tmp_min * 0.9, tmp_min - 1]), 0), min(max([tmp_max * 1.1, tmp_max + 1]), max(mae_val)))
 
     plt.pause(1e-3)
     plt.savefig(f'{name}_loss_stage_3.png')
@@ -219,15 +175,15 @@ def train_model(config: dict) -> dict:
         evaluate(true, pred, 'test', target, ax=ax)
         ret_dict[f'test {target} mae'] = skm.mean_absolute_error(true, pred)
         ret_dict[f'test {target} R2'] = skm.r2_score(true, pred)
-        ret_dict[f'test {target} mean relative mae'] = np_mean_relative_mae(true, pred)
-        ret_dict[f'test {target} max relative mae'] = np_max_relative_mae(true, pred)
+        ret_dict[f'test {target} mean relative mae'] = np_mean_absolute_relative_error(true, pred)
+        ret_dict[f'test {target} max relative mae'] = np_max_absolute_relative_error(true, pred)
 
     for true, pred, ax, target in zip(train_t.T, train_pred.T, axss[0, :], t.columns):
         evaluate(true, pred, 'train', target, ax=ax)
         ret_dict[f'train {target} mae'] = skm.mean_absolute_error(true, pred)
         ret_dict[f'train {target} R2'] = skm.r2_score(true, pred)
-        ret_dict[f'train {target} mean relative mae'] = np_mean_relative_mae(true, pred)
-        ret_dict[f'train {target} max relative mae'] = np_max_relative_mae(true, pred)
+        ret_dict[f'train {target} mean relative mae'] = np_mean_absolute_relative_error(true, pred)
+        ret_dict[f'train {target} max relative mae'] = np_max_absolute_relative_error(true, pred)
 
     model.save(f'{name}.h5')
     plt.savefig(f'{name}.png')
@@ -241,8 +197,11 @@ if __name__ == '__main__':
 
     f, t = get_feature_targets(
         dropna=True,
-        target_keys=list(set(all_target_keys) - drop_target)
+        target_keys=list(set(all_target_keys) - drop_target),
+        drop_outliers=True
     )
+
+    print(len(f))
 
     train_f_df, test_f_df, train_t_df, test_t_df = train_test_split(f, t, test_size=0.3, random_state=1203)
     train_f, test_f, train_t, test_t = train_f_df.values, test_f_df.values, train_t_df.values, test_t_df.values
@@ -257,198 +216,98 @@ if __name__ == '__main__':
     last_layer = layers.Dense(t.shape[1], 'linear', name='Output_layer')
     base_models = [
         {
-            'name': os.path.join('results', 'relu_32_kreg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ],
-        },
-        {
-            'name': os.path.join('results', 'relu_64_kreg'),
+            'name': os.path.join('results', 'relu_64_kareg_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
                     64,
                     activation='relu',
                     name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ]
-        },
-        {
-            'name': os.path.join('results', 'relu_128_kreg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    128,
-                    activation='relu',
-                    name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    64,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ]
-        },
-        {
-            'name': os.path.join('results', 'relu_256_kreg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    256,
-                    activation='relu',
-                    name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    128,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    64,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ]
-        },
-        {
-            'name': os.path.join('results', 'relu_32_areg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ],
-        },
-        {
-            'name': os.path.join('results', 'relu_64_areg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    64,
-                    activation='relu',
-                    name='Layer_1',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_2',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                layers.Dense(
-                    32,
-                    activation='relu',
-                    name='Layer_3',
-                    kernel_regularizer=regularizers.l2(0.01)
-                ),
-                last_layer,
-            ]
-        },
-        {
-            'name': os.path.join('results', 'relu_128_areg'),
-            'model': [
-                first_layer,
-                layers.Dense(
-                    128,
-                    activation='relu',
-                    name='Layer_1',
+                    kernel_regularizer=regularizers.l2(0.01),
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    64,
+                    32,
                     activation='relu',
                     name='Layer_2',
+                    kernel_regularizer=regularizers.l2(0.01),
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
                     32,
                     activation='relu',
                     name='Layer_3',
+                    kernel_regularizer=regularizers.l2(0.01),
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 last_layer,
             ]
         },
         {
-            'name': os.path.join('results', 'relu_256_areg'),
+            'name': os.path.join('results', 'relu_64_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
-                    256,
+                    64,
+                    activation='relu',
+                    name='Layer_1',
+                ),
+                layers.Dense(
+                    32,
+                    activation='relu',
+                    name='Layer_2',
+                ),
+                layers.Dense(
+                    32,
+                    activation='relu',
+                    name='Layer_3',
+                ),
+                last_layer,
+            ]
+        },
+        {
+            'name': os.path.join('results', 'relu_64_kreg_mare'),
+            'model': [
+                first_layer,
+                layers.Dense(
+                    64,
+                    activation='relu',
+                    name='Layer_1',
+                    kernel_regularizer=regularizers.l2(0.01),
+                ),
+                layers.Dense(
+                    32,
+                    activation='relu',
+                    name='Layer_2',
+                    kernel_regularizer=regularizers.l2(0.01),
+                ),
+                layers.Dense(
+                    32,
+                    activation='relu',
+                    name='Layer_3',
+                    kernel_regularizer=regularizers.l2(0.01),
+                ),
+                last_layer,
+            ]
+        },
+        {
+            'name': os.path.join('results', 'relu_64_areg_mare'),
+            'model': [
+                first_layer,
+                layers.Dense(
+                    64,
                     activation='relu',
                     name='Layer_1',
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    128,
+                    32,
                     activation='relu',
                     name='Layer_2',
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    64,
+                    32,
                     activation='relu',
                     name='Layer_3',
                     activity_regularizer=regularizers.l2(0.01)
@@ -459,13 +318,13 @@ if __name__ == '__main__':
     ]
 
     try:
-        results = pd.read_csv('results_prev.csv')
+        results = pd.read_csv('temp_results.csv')
     except:
         results = pd.DataFrame()
 
     configs_noise = list()
-    noises = [0.05, 0.5]
-    lrs = [1e-3, 5e-4, 1e-4]
+    noises = [0.005, 0.01, 0.05, 0.1]
+    lrs = [1e-3, 1e-4]
     tot_num = len(noises) * len(lrs) * len(base_models)
     curr = 0
     for noise in noises:
@@ -479,7 +338,9 @@ if __name__ == '__main__':
                 tmp_config['optimizer'] = optimizers.Adam(lr=lr)
                 tmp_config['optimizer_2'] = optimizers.Adam(lr=lr / 10)
                 print(f'{curr}/{tot_num}')
-                results = results.append(train_model(tmp_config), ignore_index=True)
+
+                if tmp_config['name'] not in results['name']:
+                    results = results.append(train_model(tmp_config), ignore_index=True)
                 print(results)
                 results.to_csv('temp_results.csv', index=False)
                 curr += 1
