@@ -123,7 +123,6 @@ void custom_print(const char *format, ...) {
     } else {
         __NOP();
     }
-
 }
 /* USER CODE END PFP */
 
@@ -174,7 +173,7 @@ int main(void) {
     /* USER CODE BEGIN WHILE */
     ai_error err;
     /// allocate the data types
-    /// RELU 64
+    /// NN1
     AI_ALIGNED(4)
     static ai_u8 nn1_activations[AI_NN1_DATA_ACTIVATIONS_SIZE];
     static ai_handle nn1_handle = AI_HANDLE_NULL;
@@ -182,7 +181,7 @@ int main(void) {
             AI_NN1_DATA_WEIGHTS(ai_nn1_data_weights_get()),
             AI_NN1_DATA_ACTIVATIONS(nn1_activations)};
 
-    /// RELU 512
+    /// NN2
     AI_ALIGNED(4)
     static ai_u8 nn2_activations[AI_NN2_DATA_ACTIVATIONS_SIZE];
     static ai_handle nn2_handle = AI_HANDLE_NULL;
@@ -190,7 +189,7 @@ int main(void) {
             AI_NN2_DATA_WEIGHTS(ai_nn2_data_weights_get()),
             AI_NN2_DATA_ACTIVATIONS(nn2_activations)};
 
-    /// TANH 64
+    /// NN3
     AI_ALIGNED(4)
     static ai_u8 nn3_activations[AI_NN3_DATA_ACTIVATIONS_SIZE];
     static ai_handle nn3_handle = AI_HANDLE_NULL;
@@ -207,8 +206,6 @@ int main(void) {
 
     err = ai_nn3_create(&nn3_handle, AI_NN3_DATA_CONFIG);
     handle_ai_err(err);
-
-
 
     /// Initialize the networks
     if (!ai_nn1_init(nn1_handle, &nn1_params)) {

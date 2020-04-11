@@ -91,17 +91,12 @@ void Error_Handler(void);
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-#ifdef CONSERVE_POWER
-#define SET_USER_LED(x)  ((void *) x)
-
-#define RESET_USER_LED(x)  ((void *) x)
-#else
 #define SET_USER_LED(x)                                                        \
   ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_SET); })
 
 #define RESET_USER_LED(x)                                                      \
   ({ HAL_GPIO_WritePin(LD##x##_GPIO_Port, LD##x##_Pin, GPIO_PIN_RESET); })
-#endif
+
 #define SET_DEBUG_PIN(x)                                                       \
   ({ HAL_GPIO_WritePin(DEBUG_##x##_GPIO_Port, DEBUG_##x##_Pin, GPIO_PIN_SET); })
 
