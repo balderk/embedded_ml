@@ -27,7 +27,7 @@ def percentage_absolute_error(y_actual, y_pred):
 if __name__ == '__main__':
     model_folder = 'results/'
     model_file_ending = '.h5'
-    model_to_assess = 'relu_512_kareg_mare_GN0.1_lr0.001'
+    model_to_assess = 'relu_256_kareg_mare_GN0.05_lr0.001'  # 'relu_512_kareg_mare_GN0.1_lr0.001'
 
     all_target_keys = sorted(['CO(GT)', 'NMHC(GT)', 'C6H6(GT)', 'NOx(GT)', 'NO2(GT)'])
     drop_target = {'NMHC(GT)'}
@@ -45,6 +45,9 @@ if __name__ == '__main__':
     train_f, test_f, train_t, test_t = train_f_df.values, test_f_df.values, train_t_df.values, test_t_df.values
 
     model = models.load_model(model_folder + model_to_assess + model_file_ending, compile=False)
+
+    # Print the details of the model configuration
+    print(model.to_yaml())
 
     pred = model.predict(test_f)
     pae = percentage_absolute_error(test_t, pred)

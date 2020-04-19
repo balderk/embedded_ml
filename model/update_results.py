@@ -1,7 +1,7 @@
 import os
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
 
 import tensorflow.keras.backend as kb
 import tensorflow as tf
@@ -18,11 +18,13 @@ import seaborn as sns
 
 from sklearn.preprocessing import StandardScaler
 
+
 def relative_absolute_error(y_actual, y_pred):
     return np.abs(y_actual - y_pred) / y_actual
 
+
 def percentage_absolute_error(y_actual, y_pred):
-    return 100*relative_absolute_error(y_actual, y_pred)
+    return 100 * relative_absolute_error(y_actual, y_pred)
 
 
 if __name__ == '__main__':
@@ -30,6 +32,9 @@ if __name__ == '__main__':
 
     df.drop_duplicates(subset=['name'], inplace=True)
     df.reset_index(inplace=True, drop=True)
+
+    print(f'Number of models:{len(df)}')
+
     all_target_keys = sorted(['CO(GT)', 'NMHC(GT)', 'C6H6(GT)', 'NOx(GT)', 'NO2(GT)'])
     drop_target = {'NMHC(GT)'}
 
