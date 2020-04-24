@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    nn3_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Fri Feb 28 21:43:47 2020
+  * @date    Thu Apr 23 22:56:25 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention

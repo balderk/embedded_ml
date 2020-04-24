@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    nn2.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Fri Feb 28 21:43:43 2020
+  * @date    Thu Apr 23 22:56:20 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -35,8 +35,6 @@
 }
 #define AI_NN2_IN_1_SIZE  (1 * 1 * 8)
 #define AI_NN2_IN_1_SIZE_BYTES  ((1 * 1 * 8) * 4)
-
-
 
 
 #define AI_NN2_OUT_NUM      (1)
@@ -79,7 +77,7 @@ AI_API_DECLARE_BEGIN
  */
 AI_API_ENTRY
 ai_bool ai_nn2_get_info(
-  ai_handle network, ai_network_report* report);
+        ai_handle network, ai_network_report *report);
 
 /*!
  * @brief Get first network error code.
@@ -106,7 +104,7 @@ ai_error ai_nn2_get_error(ai_handle network);
  */
 AI_API_ENTRY
 ai_error ai_nn2_create(
-  ai_handle* network, const ai_buffer* network_config);
+        ai_handle *network, const ai_buffer *network_config);
 
 /*!
  * @brief Destroy a neural network and frees the allocated memory.
@@ -136,7 +134,7 @@ ai_handle ai_nn2_destroy(ai_handle network);
  */
 AI_API_ENTRY
 ai_bool ai_nn2_init(
-  ai_handle network, const ai_network_params* params);
+        ai_handle network, const ai_network_params *params);
 
 
 /*!
@@ -157,7 +155,7 @@ ai_bool ai_nn2_init(
  */
 AI_API_ENTRY
 ai_i32 ai_nn2_run(
-  ai_handle network, const ai_buffer* input, ai_buffer* output);
+        ai_handle network, const ai_buffer *input, ai_buffer *output);
 
 /*!
  * @brief Runs the network on the inputs.
@@ -174,7 +172,7 @@ ai_i32 ai_nn2_run(
  */
 AI_API_ENTRY
 ai_i32 ai_nn2_forward(
-  ai_handle network, const ai_buffer* input);
+        ai_handle network, const ai_buffer *input);
 
 
 AI_API_DECLARE_END
