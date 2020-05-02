@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    nn3.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Thu Apr 23 22:56:25 2020
+  * @date    Sat May  2 22:56:26 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -46,14 +46,14 @@
 #define AI_NET_OBJ_INSTANCE g_nn3
 
 #undef AI_NN3_MODEL_SIGNATURE
-#define AI_NN3_MODEL_SIGNATURE     "31f299ce84fcc355689567cf0190b43d"
+#define AI_NN3_MODEL_SIGNATURE     "25f2e4a85faf77d0c94ee47834839230"
 
 #ifndef AI_TOOLS_REVISION_ID
 #define AI_TOOLS_REVISION_ID     "(rev-5.0.0)"
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Thu Apr 23 22:56:25 2020"
+#define AI_TOOLS_DATE_TIME   "Sat May  2 22:56:26 2020"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__

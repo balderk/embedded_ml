@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    nn1.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Thu Apr 23 22:56:15 2020
+  * @date    Sat May  2 22:56:18 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -53,7 +53,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Thu Apr 23 22:56:15 2020"
+#define AI_TOOLS_DATE_TIME   "Sat May  2 22:56:18 2020"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__

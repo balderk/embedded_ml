@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    nn2_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Thu Apr 23 22:56:20 2020
+  * @date    Sat May  2 22:56:22 2020
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -26,9 +26,9 @@
 
 #define AI_NN2_DATA_CONFIG           AI_HANDLE_NULL
 
-#define AI_NN2_DATA_ACTIVATIONS_SIZE     (3072)
+#define AI_NN2_DATA_ACTIVATIONS_SIZE     (1536)
 
-#define AI_NN2_DATA_WEIGHTS_SIZE         (709456)
+#define AI_NN2_DATA_WEIGHTS_SIZE         (174928)
 
 #define AI_NN2_DATA_ACTIVATIONS(ptr_)  \
   AI_BUFFER_OBJ_INIT( \
