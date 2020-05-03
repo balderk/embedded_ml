@@ -215,25 +215,25 @@ if __name__ == '__main__':
     last_layer = layers.Dense(t.shape[1], 'linear', name='Output_layer')
     base_models = [
         {
-            'name': os.path.join('results', 'relu_64_kareg_mare'),
+            'name': os.path.join('results', 'relu_1024_kareg_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
-                    64,
+                    1024,
                     activation='relu',
                     name='Layer_1',
                     kernel_regularizer=regularizers.l2(0.01),
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    32,
+                    512,
                     activation='relu',
                     name='Layer_2',
                     kernel_regularizer=regularizers.l2(0.01),
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    32,
+                    256,
                     activation='relu',
                     name='Layer_3',
                     kernel_regularizer=regularizers.l2(0.01),
@@ -243,21 +243,21 @@ if __name__ == '__main__':
             ]
         },
         {
-            'name': os.path.join('results', 'relu_64_mare'),
+            'name': os.path.join('results', 'relu_1024_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
-                    64,
+                    1024,
                     activation='relu',
                     name='Layer_1',
                 ),
                 layers.Dense(
-                    32,
+                    512,
                     activation='relu',
                     name='Layer_2',
                 ),
                 layers.Dense(
-                    32,
+                    256,
                     activation='relu',
                     name='Layer_3',
                 ),
@@ -265,23 +265,23 @@ if __name__ == '__main__':
             ]
         },
         {
-            'name': os.path.join('results', 'relu_64_kreg_mare'),
+            'name': os.path.join('results', 'relu_1024_kreg_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
-                    64,
+                    1024,
                     activation='relu',
                     name='Layer_1',
                     kernel_regularizer=regularizers.l2(0.01),
                 ),
                 layers.Dense(
-                    32,
+                    512,
                     activation='relu',
                     name='Layer_2',
                     kernel_regularizer=regularizers.l2(0.01),
                 ),
                 layers.Dense(
-                    32,
+                    256,
                     activation='relu',
                     name='Layer_3',
                     kernel_regularizer=regularizers.l2(0.01),
@@ -290,23 +290,23 @@ if __name__ == '__main__':
             ]
         },
         {
-            'name': os.path.join('results', 'relu_64_areg_mare'),
+            'name': os.path.join('results', 'relu_1024_areg_mare'),
             'model': [
                 first_layer,
                 layers.Dense(
-                    64,
+                    1024,
                     activation='relu',
                     name='Layer_1',
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    32,
+                    512,
                     activation='relu',
                     name='Layer_2',
                     activity_regularizer=regularizers.l2(0.01)
                 ),
                 layers.Dense(
-                    32,
+                    256,
                     activation='relu',
                     name='Layer_3',
                     activity_regularizer=regularizers.l2(0.01)

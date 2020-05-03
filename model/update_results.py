@@ -11,6 +11,7 @@ import tensorflow.keras.models as models
 
 from data.get_data import get_feature_targets
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
 
 import matplotlib.pyplot as plt
 
@@ -57,26 +58,33 @@ if __name__ == '__main__':
 
         pred = model.predict(test_f)
         pae = percentage_absolute_error(test_t, pred)
+        R2 = r2_score(test_t, pred, multioutput='raw_values')
         pae_dict[model_name] = pae
         loc = np.where(df[name_col] == model_name)[0]
 
         for col_name, col in zip(target_keys, pae.T):
-            df.loc[loc, f'test {col_name} pae 90'] = np.percentile(col, 90)
-            df.loc[loc, f'test {col_name} pae 99'] = np.percentile(col, 99)
-            df.loc[loc, f'test {col_name} pae 99.9'] = np.percentile(col, 99.9)
+            df.loc[loc, f'test {col_name} percentage'] = np.mean(col)
+            df.loc[loc, f'test {col_name} ape 90'] = np.percentile(col, 90)
+            df.loc[loc, f'test {col_name} ape 99'] = np.percentile(col, 99)
+            df.loc[loc, f'test {col_name} ape 99.9'] = np.percentile(col, 99.9)
             print(f'{col_name} {np.percentile(col, 90)}, {np.percentile(col, 99)}, {np.percentile(col, 99.9)}')
 
-        df.loc[loc, 'test pae 90 mean'] = np.mean(np.percentile(pae, 90, axis=0))
-        df.loc[loc, 'test pae 99 mean'] = np.mean(np.percentile(pae, 99, axis=0))
-        df.loc[loc, 'test pae 99.9 mean'] = np.mean(np.percentile(pae, 99.9, axis=0))
+        for col_name, col in zip(target_keys, R2.T):
+            df.loc[loc, f'test {col_name} R2'] = col
+            print(f'{col_name} {col}')
+
+        df.loc[loc, 'test percentage mean'] = np.mean(np.mean(pae, axis=0))
+        df.loc[loc, 'test ape 90 mean'] = np.mean(np.percentile(pae, 90, axis=0))
+        df.loc[loc, 'test ape 99 mean'] = np.mean(np.percentile(pae, 99, axis=0))
+        df.loc[loc, 'test ape 99.9 mean'] = np.mean(np.percentile(pae, 99.9, axis=0))
     df.to_csv('altered_results.csv', index=False)
 
-    print(df.sort_values('test pae 99.9 mean', ascending=True).head(10))
+    print(df.sort_values('test ape 99.9 mean', ascending=True).head(10))
 
-    plt.boxplot(pae_dict[df.sort_values('test pae 99.9 mean', ascending=True).head(1)['name'].values[0]])
+    plt.boxplot(pae_dict[df.sort_values('test ape 99.9 mean', ascending=True).head(1)['name'].values[0]], showfliers=False)
     plt.figure()
     sc = StandardScaler()
-    vec = pae_dict[df.sort_values('test pae 99.9 mean', ascending=True).head(1)['name'].values[0]].T
+    vec = pae_dict[df.sort_values('test ape 99.9 mean', ascending=True).head(1)['name'].values[0]].T
     vec = sc.fit_transform(vec)
     for val in vec:
         print(val)

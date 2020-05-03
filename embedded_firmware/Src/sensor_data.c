@@ -22,6 +22,7 @@ void get_sensor_values(float values[TEST_TARGET_NUM_COLS]) {
 }
 
 static uint16_t test_i = 0, train_i = 0;
+
 void new_sensor_reading(sensor_data_source_t source) {
     switch (source) {
         case SENSOR_DATA_TEST:
@@ -36,5 +37,17 @@ void new_sensor_reading(sensor_data_source_t source) {
             break;
         default:
             break;
+    }
+}
+
+void get_feature_description(const char *description[TEST_FEATURES_NUM_COLS]) {
+    for (int i = 0; i < TEST_FEATURES_NUM_COLS; i++) {
+        description[i] = test_features_column_description[i];
+    }
+}
+
+void get_target_description(const char *description[TEST_TARGET_NUM_COLS]) {
+    for (int i = 0; i < TEST_TARGET_NUM_COLS; i++) {
+        description[i] = test_target_column_description[i];
     }
 }

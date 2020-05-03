@@ -18,4 +18,8 @@ void get_sensor_reading(float reading[AI_NN1_IN_1_SIZE]);
 
 void new_sensor_reading(sensor_data_source_t source);
 
+void get_feature_description(const char *description[AI_NN1_IN_1_SIZE]);
+
+void get_target_description(const char *description[AI_NN1_OUT_1_SIZE]);
+
 #endif // EMBEDDED_FIRMWARE_SENSOR_DATA_H

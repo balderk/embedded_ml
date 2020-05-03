@@ -268,17 +268,22 @@ int main(void) {
 
     sensor_data_source_t type = SENSOR_DATA_TRAIN;
     int n_batch;
+
+    const char *feature_description[AI_NN1_IN_1_SIZE];
+    const char *target_description[AI_NN1_OUT_1_SIZE];
+    get_target_description(target_description);
+    get_feature_description(feature_description);
     while (1) {
         SET_USER_LED(1);
         SET_DEBUG_PIN(0);
         switch (type) {
             case SENSOR_DATA_TRAIN:
                 type = SENSOR_DATA_TEST;
-                custom_print((char *) "%s:\n", "TEST");
+                custom_print((char *) "%s:", "TEST");
                 break;
             case SENSOR_DATA_TEST:
                 type = SENSOR_DATA_TRAIN;
-                custom_print((char *) "%s:\n", "TRAIN");
+                custom_print((char *) "%s:", "TRAIN");
                 break;
             default:
                 while (1) {
@@ -311,10 +316,33 @@ int main(void) {
             handle_ai_err(err);
         }
         SET_USER_LED(2);
-        custom_print("%20s:\t", "input data");
+        custom_print("\n%14s:\t", "label");
         for (int i = 0; i < AI_NN1_IN_1_SIZE; i++) {
+            char format_str[6];
+            if (i == 0 || i >= 6) {
+                strcpy(format_str, "%6s ");
+            } else {
+                strcpy(format_str, "%9s ");
+            }
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) input_data[i],
+                    (char *) str_buff, sizeof(str_buff), format_str, feature_description[i]);
+            __DMB();
+            if (len > 0 && len < sizeof(str_buff)) {
+                custom_print((char *) str_buff);
+            } else {
+                __NOP();
+            }
+        }
+        custom_print("\n%14s:\t", "input data");
+        for (int i = 0; i < AI_NN1_IN_1_SIZE; i++) {
+            char format_str[6];
+            if (i == 0 || i >= 6) {
+                strcpy(format_str, "%3d.%.2d ");
+            } else {
+                strcpy(format_str, "%6d.%.2d ");
+            }
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), format_str, (int) input_data[i],
                     abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
@@ -323,10 +351,21 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "target");
+        custom_print("\n%14s:\t", "label");
         for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) target_data[i],
+                    (char *) str_buff, sizeof(str_buff), "%9s ", target_description[i]);
+            __DMB();
+            if (len > 0 && len < sizeof(str_buff)) {
+                custom_print((char *) str_buff);
+            } else {
+                __NOP();
+            }
+        }
+        custom_print("\n%14s:\t", "target");
+        for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
+            int len = snprintf(
+                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) target_data[i],
                     abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
@@ -335,10 +374,10 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output NN1");
+        custom_print("\n%14s:\t", "output NN1");
         for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn1[i],
+                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn1[i],
                     abs(((int) (output_data_nn1[i] * 100)) - ((int) output_data_nn1[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
@@ -347,10 +386,10 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output NN2");
+        custom_print("\n%14s:\t", "output NN2");
         for (int i = 0; i < AI_NN2_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn2[i],
+                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn2[i],
                     abs(((int) (output_data_nn2[i] * 100)) - ((int) output_data_nn2[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
@@ -359,10 +398,10 @@ int main(void) {
                 __NOP();
             }
         }
-        custom_print("\n%20s:\t", "output NN3");
+        custom_print("\n%14s:\t", "output NN3");
         for (int i = 0; i < AI_NN3_OUT_1_SIZE; i++) {
             int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%4d.%.2d ", (int) output_data_nn3[i],
+                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn3[i],
                     abs(((int) (output_data_nn3[i] * 100)) - ((int) output_data_nn3[i]) * 100));
             __DMB();
             if (len > 0 && len < sizeof(str_buff)) {
@@ -377,26 +416,26 @@ int main(void) {
         float mae_nn2 = mae(target_data, output_data_nn2, AI_NN2_OUT_1_SIZE);
         float mae_nn3 = mae(target_data, output_data_nn3, AI_NN3_OUT_1_SIZE);
 
-        custom_print("%20s: %4d.%.2d \n", "mae NN1",
+        custom_print("%14s: %6d.%.2d \n", "mae NN1",
                      (int) mae_nn1, (abs(((int) (mae_nn1 * 100)) - ((int) mae_nn1) * 100)));
 
-        custom_print("%20s: %4d.%.2d \n", "mae NN2",
+        custom_print("%14s: %6d.%.2d \n", "mae NN2",
                      (int) mae_nn2, (abs(((int) (mae_nn2 * 100)) - ((int) mae_nn2) * 100)));
 
-        custom_print("%20s: %4d.%.2d \n", "mae NN3",
+        custom_print("%14s: %6d.%.2d \n", "mae NN3",
                      (int) mae_nn3, (abs(((int) (mae_nn3 * 100)) - ((int) mae_nn3) * 100)));
 
         float mse_nn1 = mse(target_data, output_data_nn1, AI_NN1_OUT_1_SIZE);
         float mse_nn2 = mse(target_data, output_data_nn2, AI_NN2_OUT_1_SIZE);
         float mse_nn3 = mse(target_data, output_data_nn3, AI_NN3_OUT_1_SIZE);
 
-        custom_print("%20s: %4d.%.2d \n", "mse NN1",
+        custom_print("%14s: %6d.%.2d \n", "mse NN1",
                      (int) mse_nn1, (abs(((int) (mse_nn1 * 100)) - ((int) mse_nn1) * 100)));
 
-        custom_print("%20s: %4d.%.2d \n", "mse NN2",
+        custom_print("%14s: %6d.%.2d \n", "mse NN2",
                      (int) mse_nn2, (abs(((int) (mse_nn2 * 100)) - ((int) mse_nn2) * 100)));
 
-        custom_print("%20s: %4d.%.2d \n", "mse NN3",
+        custom_print("%14s: %6d.%.2d \n", "mse NN3",
                      (int) mse_nn3, (abs(((int) (mse_nn3 * 100)) - ((int) mse_nn3) * 100)));
 
         custom_print("\n");
