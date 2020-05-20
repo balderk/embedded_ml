@@ -261,7 +261,7 @@ int main(void) {
     ai_buffer *output_nn2 = &outputs_nn2[0];
     ai_buffer *output_nn3 = &outputs_nn3[0];
 
-    input->data = in_data;
+    input->data = input_data;
     output_nn1->data = output_data_nn1;
     output_nn2->data = output_data_nn2;
     output_nn3->data = output_data_nn3;
@@ -324,14 +324,7 @@ int main(void) {
             } else {
                 strcpy(format_str, "%9s ");
             }
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), format_str, feature_description[i]);
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print(format_str, feature_description[i]);
         }
         custom_print("\n%14s:\t", "input data");
         for (int i = 0; i < AI_NN1_IN_1_SIZE; i++) {
@@ -341,74 +334,32 @@ int main(void) {
             } else {
                 strcpy(format_str, "%6d.%.2d ");
             }
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), format_str, (int) input_data[i],
-                    abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print(format_str, (int) input_data[i],
+                         abs(((int) (input_data[i] * 100)) - ((int) input_data[i]) * 100));
         }
         custom_print("\n%14s:\t", "label");
         for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%9s ", target_description[i]);
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print("%9s ", target_description[i]);
         }
         custom_print("\n%14s:\t", "target");
         for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) target_data[i],
-                    abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print("%6d.%.2d ", (int) target_data[i],
+                         abs(((int) (target_data[i] * 100)) - ((int) target_data[i]) * 100));
         }
         custom_print("\n%14s:\t", "output NN1");
         for (int i = 0; i < AI_NN1_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn1[i],
-                    abs(((int) (output_data_nn1[i] * 100)) - ((int) output_data_nn1[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print("%6d.%.2d ", (int) output_data_nn1[i],
+                         abs(((int) (output_data_nn1[i] * 100)) - ((int) output_data_nn1[i]) * 100));
         }
         custom_print("\n%14s:\t", "output NN2");
         for (int i = 0; i < AI_NN2_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn2[i],
-                    abs(((int) (output_data_nn2[i] * 100)) - ((int) output_data_nn2[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print("%6d.%.2d ", (int) output_data_nn2[i],
+                         abs(((int) (output_data_nn2[i] * 100)) - ((int) output_data_nn2[i]) * 100));
         }
         custom_print("\n%14s:\t", "output NN3");
         for (int i = 0; i < AI_NN3_OUT_1_SIZE; i++) {
-            int len = snprintf(
-                    (char *) str_buff, sizeof(str_buff), "%6d.%.2d ", (int) output_data_nn3[i],
-                    abs(((int) (output_data_nn3[i] * 100)) - ((int) output_data_nn3[i]) * 100));
-            __DMB();
-            if (len > 0 && len < sizeof(str_buff)) {
-                custom_print((char *) str_buff);
-            } else {
-                __NOP();
-            }
+            custom_print("%6d.%.2d ", (int) output_data_nn3[i],
+                         abs(((int) (output_data_nn3[i] * 100)) - ((int) output_data_nn3[i]) * 100));
         }
         custom_print("\n");
         SET_USER_LED(3);
