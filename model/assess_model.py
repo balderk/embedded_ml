@@ -1,10 +1,10 @@
 import os
 
+from evaluation.simple_evaluation import evaluate
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-import tensorflow.keras.backend as kb
-import tensorflow as tf
 import numpy as np
 import pandas as pd
 import tensorflow.keras.models as models
@@ -43,8 +43,8 @@ if __name__ == '__main__':
         drop_outliers=True
     )
 
-    train_f_df, test_f_df, train_t_df, test_t_df = train_test_split(f, t, test_size=0.3, random_state=1203)
-    train_f, test_f, train_t, test_t = train_f_df.values, test_f_df.values, train_t_df.values, test_t_df.values
+    _, test_f_df, _, test_t_df = train_test_split(f, t, test_size=0.3, random_state=1203)
+    test_f, test_t = test_f_df.values, test_t_df.values
 
     for model_to_assess in models_to_assess:
         model = models.load_model(model_folder + model_to_assess + model_file_ending, compile=False)
@@ -59,6 +59,11 @@ if __name__ == '__main__':
         df_pae = pd.DataFrame(pae, columns=t.columns)
         df_r2 = pd.DataFrame({k: [v] for k, v in zip(t.columns, R2)})
 
+        summary = [['R2 score', *df_r2.values.tolist()[0]], ['MAPE score', *df_pae.mean().to_list()]]
+        df_summary = pd.DataFrame(summary, columns=['metric', *df_r2.columns])
+        df_summary = df_summary.set_index('metric').T
+        print(df_summary)
+        df_summary.to_csv(f'summary/{model_to_assess}_summary_performance.csv')
         plt.figure()
         plt.grid(axis='y')
         sns.boxplot(data=df_pae, showfliers=False)
@@ -73,10 +78,20 @@ if __name__ == '__main__':
         sns.barplot(data=df_r2)
         for i, e in enumerate(R2):
             plt.text(i, e, f'{e:.3f}', horizontalalignment='center', fontweight='bold')
-        plt.ylim(min(0.7, R2.min()*0.9), 1.025)
+        plt.ylim(min(0.7, R2.min() * 0.9), 1.025)
         plt.ylabel('R2 score, higher is better')
         plt.xlabel('Gas component')
         plt.title(f'{model_to_assess}\nOverview of R2 score based on the different gas components')
         plt.savefig(f'summary/{model_to_assess}_R2_summary.png')
         plt.show()
+
+        base_size = 4
+        fig, axs = plt.subplots(1, len(t.columns), figsize=(len(t.columns) * base_size, base_size))
+        test_pred = model.predict(test_f)
+
+        for true, pred, ax, target in zip(test_t.T, test_pred.T, axs, t.columns):
+            evaluate(true, pred, '', target, ax=ax, set_label=False, include_R2=False, dotted_line=True)
+
+        plt.suptitle(f'{model_to_assess} Scatter plots of predicted vs true values')
+        plt.savefig(f'summary/{model_to_assess}_dist_plot.png')
 

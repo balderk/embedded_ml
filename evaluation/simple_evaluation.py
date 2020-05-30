@@ -19,17 +19,43 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.svm import SVR
 
 
-def evaluate(true, pred, name='', target='', ax=None):
+def evaluate(true, pred, name='', target='', ax=None, set_label=True, include_R2=True, dotted_line=False):
     if ax is None:
         _, ax = plt.subplots(1, 1)
     mae = mean_absolute_error(true, pred)
     r2 = r2_score(true, pred)
     print(f'{target:10}|{name:10}| R2: {r2:>6.2f}, mae: {mae:>6.2f}  ')
-    ax.set_title(f'{target} {name} R2: {r2:.2f}')
+    title_string = f'{target}'
+    if name:
+        title_string += f' {name}'
+    if include_R2:
+        title_string += f' R2: {r2:.2f}'
+    ax.set_title(title_string)
     ax.scatter(true, pred)
-    ax.set_xlabel('true')
-    ax.set_ylabel('pred')
+
+    min_v = min(true.min(), pred.min())
+    max_v = max(true.max(), pred.max())
+    ticks = np.linspace(min_v, max_v, 5)
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
+    min_lim = min(min_v * 0.8, min_v - 0.5)
+    max_lim = min(max_v * 1.2, max_v + 0.5)
+    if set_label:
+        ax.set_xlabel('true')
+        ax.set_ylabel('pred')
+    else:
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+
+    if dotted_line:
+        plot_min = min(min_v * 10,min_v - 1000)
+        plot_max = max(max_v * 10,max_v + 1000)
+        ax.plot((plot_min, plot_max), (plot_min, plot_max), 'k--')
+
+    ax.set_xlim(min_lim, max_lim)
+    ax.set_ylim(min_lim, max_lim)
     ax.grid()
+    # ax.axis('equal')
 
 
 if __name__ == '__main__':
